@@ -7,7 +7,7 @@ namespace NS.CalviScript
     {
         public string Result { get; private set; }
 
-        public void VisitBinaryExpression(BinaryExpression expression)
+        public void Visit(BinaryExpression expression)
         {
             expression.LeftExpression.Accept(this);
             string left = Result;
@@ -20,10 +20,10 @@ namespace NS.CalviScript
                 right);
         }
 
-        public void VisitConstantExpression(ConstantExpression expression)
+        public void Visit(ConstantExpression expression)
             => Result = expression.Value.ToString();
 
-        public void VisitErrorExpression(ErrorExpression expression)
+        public void Visit(ErrorExpression expression)
             => Result = string.Format("[Error {0}]", expression.Message);
 
         // TODO: Remove this shit.

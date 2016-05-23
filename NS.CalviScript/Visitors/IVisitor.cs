@@ -2,11 +2,11 @@
 {
     public interface IVisitor
     {
-        void VisitBinaryExpression(BinaryExpression expression);
+        void Visit(BinaryExpression expression);
 
-        void VisitConstantExpression(ConstantExpression expression);
+        void Visit(ConstantExpression expression);
 
-        void VisitErrorExpression(ErrorExpression expression);
+        void Visit(ErrorExpression expression);
     }
 
     public static class IVisitorExtentions
