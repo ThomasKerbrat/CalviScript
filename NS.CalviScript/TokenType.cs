@@ -4,14 +4,18 @@
     {
         None,
         Error,
-        Plus,
-        LeftParenthesis,
-        RightParenthesis,
+
         Number,
+
+        Plus,
         Minus,
         Mult,
         Div,
         Modulo,
+
+        LeftParenthesis,
+        RightParenthesis,
+
         End
     }
 }
