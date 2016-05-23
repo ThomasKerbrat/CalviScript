@@ -103,5 +103,21 @@ namespace NS.CalviScript.Tests
             Assert.That(t8.Type, Is.EqualTo(TokenType.RightParenthesis));
 
         }
+
+        [Test]
+        public void should_parse_comments()
+        {
+            Tokenizer tokenizer = new Tokenizer("2 + // Comment\r\n5");
+
+            Token t1 = tokenizer.GetNextToken();
+            Token t2 = tokenizer.GetNextToken();
+            Token t3 = tokenizer.GetNextToken();
+            Token t4 = tokenizer.GetNextToken();
+
+            Assert.That(t1.Type, Is.EqualTo(TokenType.Number));
+            Assert.That(t2.Type, Is.EqualTo(TokenType.Plus));
+            Assert.That(t3.Type, Is.EqualTo(TokenType.Number));
+            Assert.That(t4.Type, Is.EqualTo(TokenType.End));
+        }
     }
 }
