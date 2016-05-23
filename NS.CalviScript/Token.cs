@@ -6,6 +6,10 @@
             : this(type, string.Empty)
         { }
 
+        public Token(TokenType type, char value)
+            : this(type, value.ToString())
+        { }
+
         public Token(TokenType type, string value)
         {
             Type = type;
