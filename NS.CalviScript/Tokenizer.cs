@@ -9,28 +9,26 @@ namespace NS.CalviScript
         readonly string _input;
         int _position;
 
-
-
         public Tokenizer(string input)
         {
             _input = input;
         }
 
+        #region Properties
+        public Token CurrentToken { get; private set; }
 
-
-        public bool IsEnd => _position >= _input.Length;
+        bool IsEnd => _position >= _input.Length;
 
         bool IsComment => _position < _input.Length - 1 && Peek() == '/' && Peek(1) == '/';
 
-        public bool IsWhiteSpace => char.IsWhiteSpace(Peek());
+        bool IsWhiteSpace => char.IsWhiteSpace(Peek());
 
-        private bool IsNumber => char.IsDigit(Peek()) && Peek() != '0';
-
-
+        bool IsNumber => char.IsDigit(Peek());
+        #endregion
 
         public Token GetNextToken()
         {
-            if (IsEnd) return new Token(TokenType.End);
+            if (IsEnd) return CurrentToken = new Token(TokenType.End);
 
             while (IsWhiteSpace || IsComment)
             {
@@ -49,9 +47,11 @@ namespace NS.CalviScript
             else if (IsNumber) result = HandleNumber();
             else result = new Token(TokenType.Error, Peek());
 
+            CurrentToken = result;
             return result;
         }
 
+        #region Handle Methods
         private void HandleWhiteSpace()
         {
             Debug.Assert(IsWhiteSpace);
@@ -80,6 +80,13 @@ namespace NS.CalviScript
         {
             Debug.Assert(IsNumber);
 
+            if (Peek() == '0')
+            {
+                Forward();
+                if (!IsEnd && IsNumber) return new Token(TokenType.Error, Peek());
+                return new Token(TokenType.Number, '0');
+            }
+
             StringBuilder sb = new StringBuilder();
             do
             {
@@ -90,8 +97,9 @@ namespace NS.CalviScript
             return new Token(TokenType.Number, sb.ToString());
         }
 
+        #endregion
 
-
+        #region Move methods
         char Read() => _input[_position++];
 
         char Peek(int offset) => _input[_position + offset];
@@ -99,5 +107,31 @@ namespace NS.CalviScript
         char Peek() => Peek(0);
 
         void Forward() => _position++;
+        #endregion
+
+        #region Parser Helpers
+        public bool MathNumber(out Token token)
+        {
+            return MatchToken(TokenType.Number, out token);
+        }
+
+        public bool MathOperator(out Token token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool MatchToken(TokenType type, out Token token)
+        {
+            if (type == CurrentToken.Type)
+            {
+                token = CurrentToken;
+                GetNextToken();
+                return true;
+            }
+
+            token = null;
+            return false;
+        }
+        #endregion
     }
 }
