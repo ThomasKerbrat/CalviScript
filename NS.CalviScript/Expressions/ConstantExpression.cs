@@ -14,5 +14,10 @@ namespace NS.CalviScript
         public string ToLispyString() => Value.ToString();
 
         public string ToInfixString() => Value.ToString();
+
+        public void Accept(IVisitor visitor)
+        {
+            visitor.VisitConstantExpression(this);
+        }
     }
 }

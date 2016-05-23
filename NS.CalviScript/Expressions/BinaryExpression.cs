@@ -42,5 +42,10 @@ namespace NS.CalviScript
                 return "%";
             }
         }
+
+        public void Accept(IVisitor visitor)
+        {
+            visitor.VisitBinaryExpression(this);
+        }
     }
 }
