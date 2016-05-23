@@ -12,7 +12,7 @@ namespace NS.CalviScript
             _tokenizer.GetNextToken();
         }
 
-        public IExpression ParseOperation()
+        public IExpression ParseExpression()
         {
             IExpression expression = Expression();
             Token token;
@@ -23,12 +23,13 @@ namespace NS.CalviScript
             return expression;
         }
 
+        #region Grammar Methods
         public IExpression Expression()
         {
             IExpression left = Term();
 
             Token token = _tokenizer.CurrentToken;
-            while (token.Type == TokenType.Plus || token.Type == TokenType.Minus)
+            while (_tokenizer.MatchTermOperator(out token))
             {
                 _tokenizer.GetNextToken();
                 IExpression right = Term();
@@ -44,7 +45,7 @@ namespace NS.CalviScript
             IExpression left = Factor();
 
             Token token = _tokenizer.CurrentToken;
-            while (token.Type == TokenType.Mult || token.Type == TokenType.Div || token.Type == TokenType.Modulo)
+            while (_tokenizer.MatchFactorOperator(out token))
             {
                 _tokenizer.GetNextToken();
                 IExpression right = Factor();
@@ -60,22 +61,32 @@ namespace NS.CalviScript
             IExpression result;
             Token token;
 
-            if (_tokenizer.MatchToken(TokenType.LeftParenthesis, out token))
-            {
-                result = Expression();
-                if (!_tokenizer.MatchToken(TokenType.RightParenthesis, out token))
-                {
-                    var error = "Expected closing parenthesis, but {0} found.";
-                    result = new ErrorExpression(string.Format(error, _tokenizer.CurrentToken.Type.ToString()));
-                }
-            }
-            else
+            if (_tokenizer.MatchNumber(out token))
             {
                 result = new NumberExpression(int.Parse(_tokenizer.CurrentToken.Value));
                 _tokenizer.GetNextToken();
             }
+            else if (_tokenizer.MatchToken(TokenType.LeftParenthesis))
+            {
+                _tokenizer.GetNextToken();
+                result = Expression();
+                if (!_tokenizer.MatchToken(TokenType.RightParenthesis))
+                {
+                    var error = "Expected closing parenthesis, but {0} found.";
+                    result = new ErrorExpression(string.Format(error, _tokenizer.CurrentToken.Type.ToString()));
+                }
+                else
+                {
+                    _tokenizer.GetNextToken();
+                }
+            }
+            else
+            {
+                return new ErrorExpression(string.Format("Unexpected token: {0}", token.Type));
+            }
 
             return result;
         }
+        #endregion
     }
 }

@@ -110,14 +110,33 @@ namespace NS.CalviScript
         #endregion
 
         #region Parser Helpers
-        public bool MathNumber(out Token token)
+        public bool MatchNumber(out Token token)
         {
             return MatchToken(TokenType.Number, out token);
         }
 
-        public bool MathOperator(out Token token)
+        public bool MatchTermOperator(out Token token)
+            => MatchOperator(type => type == TokenType.Plus || type == TokenType.Minus, out token);
+
+        public bool MatchFactorOperator(out Token token)
+            => MatchOperator(type => type == TokenType.Mult || type == TokenType.Div || type == TokenType.Modulo, out token);
+
+        public bool MatchOperator(Func<TokenType, bool> predicate, out Token token)
         {
-            throw new NotImplementedException();
+            if (predicate(CurrentToken.Type))
+            {
+                token = CurrentToken;
+                return true;
+            }
+
+            token = null;
+            return false;
+        }
+
+        public bool MatchToken(TokenType type)
+        {
+            Token token;
+            return MatchToken(type, out token);
         }
 
         public bool MatchToken(TokenType type, out Token token)
@@ -125,7 +144,6 @@ namespace NS.CalviScript
             if (type == CurrentToken.Type)
             {
                 token = CurrentToken;
-                GetNextToken();
                 return true;
             }
 
