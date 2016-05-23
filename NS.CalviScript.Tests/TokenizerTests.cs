@@ -7,9 +7,9 @@ namespace NS.CalviScript.Tests
     {
         [TestCase("+", TokenType.Plus)]
         [TestCase("-", TokenType.Minus)]
-        [TestCase("*", TokenType.Star)]
-        [TestCase("/", TokenType.Slash)]
-        [TestCase("%", TokenType.Percent)]
+        [TestCase("*", TokenType.Mult)]
+        [TestCase("/", TokenType.Div)]
+        [TestCase("%", TokenType.Modulo)]
         [TestCase("(", TokenType.LeftParenthesis)]
         public void should_parse_string_containing_one_char(string input, TokenType expected)
         {
@@ -75,6 +75,7 @@ namespace NS.CalviScript.Tests
             Assert.That(t8.Type, Is.EqualTo(TokenType.RightParenthesis));
 
         }
+
         [Test]
         public void should_parse_operator_number_and_parenthesis_symbols()
         {

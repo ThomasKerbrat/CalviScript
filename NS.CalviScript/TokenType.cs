@@ -9,9 +9,9 @@
         RightParenthesis,
         Number,
         Minus,
-        Star,
-        Slash,
-        Percent,
+        Mult,
+        Div,
+        Modulo,
         End
     }
 }
