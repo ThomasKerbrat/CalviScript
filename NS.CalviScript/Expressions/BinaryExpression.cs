@@ -7,12 +7,12 @@ namespace NS.CalviScript
     {
         public BinaryExpression(TokenType type, IExpression left, IExpression right)
         {
-            TokenType = type;
+            OperatorType = type;
             LeftExpression = left;
             RightExpression = right;
         }
 
-        public TokenType TokenType { get; set; }
+        public TokenType OperatorType { get; set; }
 
         public IExpression LeftExpression { get; internal set; }
 
@@ -20,19 +20,25 @@ namespace NS.CalviScript
 
         public string ToLispyString() => string.Format(
             "[{0} {1} {2}]",
-            TokenTypeToString(),
+            OperatorTypeToString(),
             LeftExpression.ToLispyString(),
             RightExpression.ToLispyString());
 
-        string TokenTypeToString()
+        public string ToInfixString() => string.Format(
+            "({0} {1} {2})",
+            LeftExpression.ToInfixString(),
+            OperatorTypeToString(),
+            RightExpression.ToInfixString());
+
+        string OperatorTypeToString()
         {
-            if (TokenType == TokenType.Plus) return "+";
-            else if (TokenType == TokenType.Minus) return "-";
-            else if (TokenType == TokenType.Mult) return "*";
-            else if (TokenType == TokenType.Div) return "/";
+            if (OperatorType == TokenType.Plus) return "+";
+            else if (OperatorType == TokenType.Minus) return "-";
+            else if (OperatorType == TokenType.Mult) return "*";
+            else if (OperatorType == TokenType.Div) return "/";
             else
             {
-                Debug.Assert(TokenType == TokenType.Modulo);
+                Debug.Assert(OperatorType == TokenType.Modulo);
                 return "%";
             }
         }

@@ -3,5 +3,6 @@
     public interface IExpression
     {
         string ToLispyString();
+        string ToInfixString();
     }
 }
