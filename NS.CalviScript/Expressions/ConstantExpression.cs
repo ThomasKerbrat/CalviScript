@@ -2,12 +2,13 @@
 
 namespace NS.CalviScript
 {
-    public class NumberExpression : IExpression
+    public class ConstantExpression : IExpression
     {
-        public NumberExpression(int value)
+        public ConstantExpression(int value)
         {
             Value = value;
         }
+
         public int Value { get; }
 
         public string ToLispyString() => Value.ToString();

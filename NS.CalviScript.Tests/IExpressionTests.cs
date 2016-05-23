@@ -12,12 +12,12 @@ namespace NS.CalviScript.Tests
                 TokenType.Plus,
                 new BinaryExpression(
                     TokenType.Plus,
-                    new NumberExpression(2),
-                    new NumberExpression(7)),
+                    new ConstantExpression(2),
+                    new ConstantExpression(7)),
                 new BinaryExpression(
                     TokenType.Mult,
-                    new NumberExpression(5),
-                    new NumberExpression(8)));
+                    new ConstantExpression(5),
+                    new ConstantExpression(8)));
 
 
             Assert.That(expression.ToInfixString(), Is.EqualTo("((2 + 7) + (5 * 8))"));

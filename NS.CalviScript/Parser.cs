@@ -63,7 +63,7 @@ namespace NS.CalviScript
 
             if (_tokenizer.MatchNumber(out token))
             {
-                result = new NumberExpression(int.Parse(_tokenizer.CurrentToken.Value));
+                result = new ConstantExpression(int.Parse(_tokenizer.CurrentToken.Value));
                 _tokenizer.GetNextToken();
             }
             else if (_tokenizer.MatchToken(TokenType.LeftParenthesis))
