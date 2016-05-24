@@ -1,14 +1,5 @@
 ﻿namespace NS.CalviScript
 {
-    public interface IVisitor
-    {
-        void Visit(BinaryExpression expression);
-
-        void Visit(ConstantExpression expression);
-
-        void Visit(ErrorExpression expression);
-    }
-
     public interface IVisitor<T>
     {
         T Visit(BinaryExpression expression);
