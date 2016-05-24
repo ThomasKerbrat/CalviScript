@@ -10,6 +10,13 @@
             _tokenizer.GetNextToken();
         }
 
+        public static IExpression Parse(string input)
+        {
+            Tokenizer tokenizer = new Tokenizer(input);
+            Parser parser = new Parser(tokenizer);
+            return parser.ParseExpression();
+        }
+
         public IExpression ParseExpression()
         {
             IExpression expression = Expression();
