@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace NS.CalviScript
 {
@@ -18,18 +17,6 @@ namespace NS.CalviScript
 
         public IExpression RightExpression { get; internal set; }
 
-        public string ToLispyString() => string.Format(
-            "[{0} {1} {2}]",
-            OperatorTypeToString(),
-            LeftExpression.ToLispyString(),
-            RightExpression.ToLispyString());
-
-        public string ToInfixString() => string.Format(
-            "({0} {1} {2})",
-            LeftExpression.ToInfixString(),
-            OperatorTypeToString(),
-            RightExpression.ToInfixString());
-
         string OperatorTypeToString()
         {
             if (OperatorType == TokenType.Plus) return "+";
@@ -41,11 +28,6 @@ namespace NS.CalviScript
                 Debug.Assert(OperatorType == TokenType.Modulo);
                 return "%";
             }
-        }
-
-        public void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
         }
 
         public T Accept<T>(IVisitor<T> visitor)

@@ -20,9 +20,6 @@
 
     public static class IVisitorExtentions
     {
-        public static void Visit(this IVisitor @this, IExpression expression)
-            => expression.Accept(@this);
-
         public static T Visit<T>(this IVisitor<T> @this, IExpression expression)
             => expression.Accept(@this);
     }

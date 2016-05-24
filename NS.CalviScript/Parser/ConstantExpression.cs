@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NS.CalviScript
+﻿namespace NS.CalviScript
 {
     public class ConstantExpression : IExpression
     {
@@ -10,15 +8,6 @@ namespace NS.CalviScript
         }
 
         public int Value { get; }
-
-        public string ToLispyString() => Value.ToString();
-
-        public string ToInfixString() => Value.ToString();
-
-        public void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
 
         public T Accept<T>(IVisitor<T> visitor)
         {

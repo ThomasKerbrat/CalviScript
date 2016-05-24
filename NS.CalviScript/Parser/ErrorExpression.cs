@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NS.CalviScript
+﻿namespace NS.CalviScript
 {
     public class ErrorExpression : IExpression
     {
@@ -10,15 +8,6 @@ namespace NS.CalviScript
         }
 
         public string Message { get; }
-
-        public string ToLispyString() => string.Format("[Error {0}]", Message);
-
-        public string ToInfixString() => string.Format("[Error {0}]", Message);
-
-        public void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
 
         public T Accept<T>(IVisitor<T> visitor)
         {
