@@ -47,5 +47,10 @@ namespace NS.CalviScript
         {
             visitor.Visit(this);
         }
+
+        public T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
     }
 }
