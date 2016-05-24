@@ -17,7 +17,7 @@ namespace NS.CalviScript
 
         public void Accept(IVisitor visitor)
         {
-            visitor.VisitConstantExpression(this);
+            visitor.Visit(this);
         }
     }
 }
