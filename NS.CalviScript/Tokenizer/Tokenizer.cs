@@ -90,7 +90,7 @@ namespace NS.CalviScript
             if (Peek() == '0')
             {
                 Forward();
-                if (!IsEnd && IsNumber) return new Token(TokenType.Error, Peek());
+                if (!IsEnd && (IsNumber || IsIdentifier)) return new Token(TokenType.Error, Peek());
                 return new Token(TokenType.Number, '0');
             }
 
@@ -124,46 +124,52 @@ namespace NS.CalviScript
         #region Move methods
         char Read() => _input[_position++];
 
-        char Peek(int offset) => _input[_position + offset];
-
         char Peek() => Peek(0);
+
+        char Peek(int offset) => _input[_position + offset];
 
         void Forward() => _position++;
         #endregion
 
         #region Parser Helpers
         public bool MatchNumber(out Token token)
-        {
-            return MatchToken(TokenType.Number, out token);
-        }
+            => MatchToken(TokenType.Number, out token);
 
         public bool MatchTermOperator(out Token token)
-            => MatchOperator(type => type == TokenType.Plus || type == TokenType.Minus, out token);
+            => MatchToken(type => type == TokenType.Plus || type == TokenType.Minus, out token);
 
         public bool MatchFactorOperator(out Token token)
-            => MatchOperator(type => type == TokenType.Mult || type == TokenType.Div || type == TokenType.Modulo, out token);
+            => MatchToken(type => type == TokenType.Mult || type == TokenType.Div || type == TokenType.Modulo, out token);
 
-        public bool MatchOperator(Func<TokenType, bool> predicate, out Token token)
-        {
-            if (predicate(CurrentToken.Type))
-            {
-                token = CurrentToken;
-                return true;
-            }
-
-            token = null;
-            return false;
-        }
-
+        /// <summary>
+        /// Calls <see cref="MatchToken(TokenType, out Token)"/> but discard the Token value assigned in the method.
+        /// </summary>
+        /// <param name="type">Type to match against.</param>
+        /// <returns>Returns if the <see cref="CurrentToken"/> type has matched with the provided Token type.</returns>
         public bool MatchToken(TokenType type)
         {
             Token token;
             return MatchToken(type, out token);
         }
 
+        /// <summary>
+        /// Match the <see cref="CurrentToken"/> type to any <see cref="TokenType"/> provided.
+        /// </summary>
+        /// <param name="type">Type to match against.</param>
+        /// <param name="token">Variable that will be assigned during the match.</param>
+        /// <returns>Returns if the <see cref="CurrentToken"/> type has matched with the provided Token type.</returns>
         public bool MatchToken(TokenType type, out Token token)
+            => MatchToken(_type => _type == type, out token);
+
+        /// <summary>
+        /// Match the <see cref="CurrentToken"/> type to any <see cref="TokenType"/> with the provided predicate.
+        /// </summary>
+        /// <param name="predicate">A predicate that will determine if the <see cref="TokenType"/> has matched.</param>
+        /// <param name="token">Variable that will be assigned during the match.</param>
+        /// <returns>Returns if the <see cref="CurrentToken"/> type has matched according to the provided predicate.</returns>
+        public bool MatchToken(Func<TokenType, bool> predicate, out Token token)
         {
-            if (type == CurrentToken.Type)
+            if (predicate(CurrentToken.Type))
             {
                 token = CurrentToken;
                 return true;

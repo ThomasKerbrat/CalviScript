@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace NS.CalviScript.Tests
@@ -143,6 +144,38 @@ namespace NS.CalviScript.Tests
             Assert.That(t4.Type, Is.EqualTo(TokenType.Number));
             Assert.That(t5.Type, Is.EqualTo(TokenType.SemiColon));
             Assert.That(t6.Type, Is.EqualTo(TokenType.End));
+        }
+
+        [TestCase("+", TokenType.Plus)]
+        [TestCase("-", TokenType.Minus)]
+        [TestCase("*", TokenType.Mult)]
+        [TestCase("/", TokenType.Div)]
+        [TestCase("%", TokenType.Modulo)]
+        [TestCase("(", TokenType.LeftParenthesis)]
+        [TestCase(")", TokenType.RightParenthesis)]
+        [TestCase("?", TokenType.QuestionMark)]
+        [TestCase(":", TokenType.Colon)]
+        [TestCase("=", TokenType.Equal)]
+        [TestCase(";", TokenType.SemiColon)]
+        [TestCase("0", TokenType.Number)]
+        [TestCase("1", TokenType.Number)]
+        [TestCase("01", TokenType.Error)]
+        [TestCase("0name", TokenType.Error)]
+        [TestCase("name", TokenType.Identifier)]
+        [TestCase("_name", TokenType.Identifier)]
+        [TestCase("__name", TokenType.Identifier)]
+        [TestCase("_0name", TokenType.Identifier)]
+        [TestCase("name0", TokenType.Identifier)]
+        [TestCase("_name0", TokenType.Identifier)]
+        public void should_match_types(string input, TokenType type)
+        {
+            Token token;
+            var tokenizer = new Tokenizer(input);
+            tokenizer.GetNextToken();
+
+            var result = tokenizer.MatchToken(t => t == type, out token);
+
+            Assert.That(result, Is.EqualTo(true));
         }
     }
 }
