@@ -1,6 +1,6 @@
 ﻿namespace NS.CalviScript
 {
-    public class GenericLispyStringVisitor : IVisitor<string>
+    public class LispyStringVisitor : IVisitor<string>
     {
         public string Visit(ErrorExpression expression)
             => string.Format("[Error {0}]", expression.Message);

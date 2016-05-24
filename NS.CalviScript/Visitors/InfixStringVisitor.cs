@@ -2,7 +2,7 @@
 
 namespace NS.CalviScript
 {
-    public class GenericInfixStringVisitor : IVisitor<string>
+    public class InfixStringVisitor : IVisitor<string>
     {
         public string Visit(ErrorExpression expression)
             => string.Format("[Error {0}]", expression.Message);

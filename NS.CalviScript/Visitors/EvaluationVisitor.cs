@@ -2,7 +2,7 @@
 
 namespace NS.CalviScript
 {
-    public class GenericEvaluationVisitor : IVisitor<int>
+    public class EvaluationVisitor : IVisitor<int>
     {
         public int Visit(ErrorExpression expression)
         {

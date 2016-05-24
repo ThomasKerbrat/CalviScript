@@ -9,19 +9,20 @@ namespace NS.CalviScript.Tests
         [TestCase("(11 + 7) / 15 % 8", "[% [/ [+ 11 7] 15] 8]")]
         [TestCase("10 + (11 + 50)","[+ 10 [+ 11 50]]")]
         [TestCase("2 + 3 * 5", "[+ 2 [* 3 5]]")]
+        [TestCase("2 * -7", "[* 2 [- 7]]")]
         public void should_parse_some_complex_operation(string input, string expected)
         {
-            Tokenizer tokenizer = new Tokenizer(input);
-            Parser parser = new Parser(tokenizer);
+            var visitor = new LispyStringVisitor();
 
-            IExpression expression = parser.ParseExpression();
+            IExpression expression = Parser.Parse(input);
 
-            Assert.That(expression.ToLispyString(), Is.EqualTo(expected));
+            Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
         }
 
         [Test]
         public void should_stringify()
         {
+            var visitor = new InfixStringVisitor();
             IExpression expression = new BinaryExpression(
                 TokenType.Plus,
                 new BinaryExpression(
@@ -33,8 +34,7 @@ namespace NS.CalviScript.Tests
                     new ConstantExpression(5),
                     new ConstantExpression(8)));
 
-
-            Assert.That(expression.ToInfixString(), Is.EqualTo("((2 + 7) + (5 * 8))"));
+            Assert.That(visitor.Visit(expression), Is.EqualTo("((2 + 7) + (-5 * 8))"));
         }
     }
 }
