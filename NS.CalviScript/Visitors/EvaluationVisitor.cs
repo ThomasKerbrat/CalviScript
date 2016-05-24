@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NS.CalviScript
 {
     public class EvaluationVisitor : IVisitor
     {
-        public EvaluationVisitor() { }
-
         public int Result { get; private set; }
 
         public void Visit(ErrorExpression expression)
@@ -50,6 +44,36 @@ namespace NS.CalviScript
                     break;
                 default:
                     throw new ArgumentException("Not an operator.");
+            }
+        }
+    }
+
+    public class GenericEvaluationVisitor : IVisitor<int>
+    {
+        public int Visit(ErrorExpression expression)
+        {
+            throw new InvalidOperationException(expression.Message);
+        }
+
+        public int Visit(ConstantExpression expression)
+            => expression.Value;
+
+        public int Visit(BinaryExpression expression)
+        {
+            switch (expression.OperatorType)
+            {
+                case TokenType.Plus:
+                    return expression.LeftExpression.Accept(this) + expression.RightExpression.Accept(this);
+                case TokenType.Minus:
+                    return expression.LeftExpression.Accept(this) - expression.RightExpression.Accept(this);
+                case TokenType.Mult:
+                    return expression.LeftExpression.Accept(this) * expression.RightExpression.Accept(this);
+                case TokenType.Div:
+                    return expression.LeftExpression.Accept(this) / expression.RightExpression.Accept(this);
+                case TokenType.Modulo:
+                    return expression.LeftExpression.Accept(this) % expression.RightExpression.Accept(this);
+                default:
+                    throw new ArgumentException("Not an operator");
             }
         }
     }

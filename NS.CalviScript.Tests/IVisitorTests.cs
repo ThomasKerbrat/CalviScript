@@ -57,5 +57,27 @@ namespace NS.CalviScript.Tests
 
             Assert.That(result, Is.EqualTo("[+ 5 [% 10 2]]"));
         }
+
+        [Test]
+        public void should_stringify_to_infix_using_generic_visitor()
+        {
+            IExpression expression = Parser.Parse("70 % (50 - 4 * 6)");
+            GenericInfixStringVisitor visitor = new GenericInfixStringVisitor();
+
+            string result = visitor.Visit(expression);
+
+            Assert.That(result, Is.EqualTo("(70 % (50 - (4 * 6)))"));
+        }
+
+        [Test]
+        public void should_evaluate_using_generic_visitor()
+        {
+            IExpression expression = Parser.Parse("70 % (50 - 4 * 6)");
+            GenericEvaluationVisitor visitor = new GenericEvaluationVisitor();
+
+            int result = visitor.Visit(expression);
+
+            Assert.That(result, Is.EqualTo(18));
+        }
     }
 }
