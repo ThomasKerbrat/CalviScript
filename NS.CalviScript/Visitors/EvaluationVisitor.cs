@@ -4,9 +4,18 @@ namespace NS.CalviScript
 {
     public class EvaluationVisitor : IVisitor<int>
     {
+        public int Visit(ProgramExpression expression)
+        {
+            throw new NotImplementedException();
+        }
 
         public int Visit(ConstantExpression expression)
             => expression.Value;
+
+        int IVisitor<int>.Visit(LookUpExpression expression)
+        {
+            throw new NotImplementedException();
+        }
 
         public int Visit(UnaryExpression expression)
         {
@@ -43,6 +52,11 @@ namespace NS.CalviScript
             return expression.PredicateExpression.Accept(this) >= 0 ?
                 expression.TrueExpression.Accept(this) :
                 expression.FalseExpression.Accept(this);
+        }
+
+        public int Visit(VariableDeclarationExpression expression)
+        {
+            throw new NotImplementedException();
         }
 
         public int Visit(ErrorExpression expression)

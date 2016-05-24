@@ -1,11 +1,30 @@
 ﻿using System;
+using System.Text;
 
 namespace NS.CalviScript
 {
     public class LispyStringVisitor : IVisitor<string>
     {
+        public string Visit(ProgramExpression expression)
+        {
+            var sb = new StringBuilder();
+            sb.Append("[S");
+
+            foreach (var expression_i in expression.Statements)
+            {
+                sb.Append(" ");
+                sb.Append(expression_i.Accept(this));
+            }
+
+            sb.Append(']');
+            return sb.ToString();
+        }
+
         public string Visit(ConstantExpression expression)
             => expression.Value.ToString();
+
+        public string Visit(LookUpExpression expression)
+            => string.Format("[LU \"{0}\"]", expression.Identifier);
 
         public string Visit(UnaryExpression expression)
             => string.Format("[{0} {1}]",
@@ -23,6 +42,11 @@ namespace NS.CalviScript
                 expression.PredicateExpression.Accept(this),
                 expression.TrueExpression.Accept(this),
                 expression.FalseExpression.Accept(this));
+
+        public string Visit(VariableDeclarationExpression expression)
+            => string.Format("[VD \"{0}\" {1}]",
+                expression.Identifier,
+                expression.Expression.Accept(this));
 
         public string Visit(ErrorExpression expression)
             => string.Format("[Error {0}]", expression.Message);

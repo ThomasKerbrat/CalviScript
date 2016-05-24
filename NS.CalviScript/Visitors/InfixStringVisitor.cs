@@ -4,8 +4,18 @@ namespace NS.CalviScript
 {
     public class InfixStringVisitor : IVisitor<string>
     {
+        public string Visit(ProgramExpression expression)
+        {
+            throw new NotImplementedException();
+        }
+
         public string Visit(ConstantExpression expression)
             => expression.Value.ToString();
+
+        public string Visit(LookUpExpression expression)
+        {
+            throw new NotImplementedException();
+        }
 
         public string Visit(UnaryExpression expression)
             => string.Format("{0}{1}",
@@ -23,6 +33,11 @@ namespace NS.CalviScript
                 expression.PredicateExpression.Accept(this),
                 expression.TrueExpression.Accept(this),
                 expression.FalseExpression.Accept(this));
+
+        public string Visit(VariableDeclarationExpression expression)
+        {
+            throw new NotImplementedException();
+        }
 
         public string Visit(ErrorExpression expression)
             => string.Format("[Error {0}]", expression.Message);
