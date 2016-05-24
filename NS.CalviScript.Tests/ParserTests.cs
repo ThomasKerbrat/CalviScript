@@ -41,6 +41,7 @@ namespace NS.CalviScript.Tests
         }
 
         [TestCase("1 ? 2 : 3", "[? 1 2 3]")]
+        [TestCase("-1 ? 2 : 3", "[? [- 1] 2 3]")]
         public void should_parse_ternary_expressions(string input, string expected)
         {
             var visitor = new LispyStringVisitor();
