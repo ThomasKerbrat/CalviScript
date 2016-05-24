@@ -16,7 +16,7 @@ namespace NS.CalviScript
 
             Result = string.Format("({0} {1} {2})",
                 left,
-                TokenTypeToString(expression.OperatorType),
+                TokenTypeHelpers.TokenTypeToString(expression.OperatorType),
                 right);
         }
 
@@ -25,19 +25,5 @@ namespace NS.CalviScript
 
         public void Visit(ErrorExpression expression)
             => Result = string.Format("[Error {0}]", expression.Message);
-
-        // TODO: Remove this shit.
-        string TokenTypeToString(TokenType type)
-        {
-            if (type == TokenType.Plus) return "+";
-            else if (type == TokenType.Minus) return "-";
-            else if (type == TokenType.Mult) return "*";
-            else if (type == TokenType.Div) return "/";
-            else
-            {
-                Debug.Assert(type == TokenType.Modulo);
-                return "%";
-            }
-        }
     }
 }
