@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace NS.CalviScript
 {
@@ -6,16 +7,26 @@ namespace NS.CalviScript
     {
         public string Visit(ProgramExpression expression)
         {
-            throw new NotImplementedException();
+            var sb = new StringBuilder();
+
+            var enumerator = expression.Statements.GetEnumerator();
+            enumerator.MoveNext();
+            while (enumerator.Current != null)
+            {
+                sb.Append(enumerator.Current.Accept(this));
+                sb.Append(";");
+                if (enumerator.MoveNext())
+                    sb.Append(" ");
+            }
+
+            return sb.ToString();
         }
 
         public string Visit(ConstantExpression expression)
             => expression.Value.ToString();
 
         public string Visit(LookUpExpression expression)
-        {
-            throw new NotImplementedException();
-        }
+            => expression.Identifier;
 
         public string Visit(UnaryExpression expression)
             => string.Format("{0}{1}",
@@ -35,9 +46,9 @@ namespace NS.CalviScript
                 expression.FalseExpression.Accept(this));
 
         public string Visit(VariableDeclarationExpression expression)
-        {
-            throw new NotImplementedException();
-        }
+            => string.Format("var {0} = {1}",
+                expression.Identifier,
+                expression.Expression.Accept(this));
 
         public string Visit(ErrorExpression expression)
             => string.Format("[Error {0}]", expression.Message);
