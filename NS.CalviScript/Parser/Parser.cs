@@ -1,14 +1,16 @@
-﻿namespace NS.CalviScript
+﻿using System.Collections.Generic;
+
+namespace NS.CalviScript
 {
     /// <summary>
-    /// *program: (statement ';')* EOI
-    /// *statement: variableDeclaration | expression
+    /// program: (statement ';')* EOI
+    /// statement: variableDeclaration | expression
     /// *variableDeclaration: VAR IDENTIFIER '=' expression
     /// expression: mathExpression ('?' expression ':' expression)?
     /// mathExpression: term (('+' | '-') term)*
     /// term: factor (('*' | '/' | '%') factor)*
     /// factor: '-'? positiveFactor
-    /// *positiveFactor: NUMBER | IDENTIFIER | ('(' expression ')')
+    /// positiveFactor: NUMBER | IDENTIFIER | ('(' expression ')')
     /// </summary>
     public class Parser
     {
@@ -20,11 +22,18 @@
             _tokenizer.GetNextToken();
         }
 
-        public static IExpression Parse(string input)
+        #region Entry Points
+        public IExpression ParseProgram()
         {
-            Tokenizer tokenizer = new Tokenizer(input);
-            Parser parser = new Parser(tokenizer);
-            return parser.ParseExpression();
+            var statements = new List<IExpression>();
+
+            while (!_tokenizer.MatchToken(TokenType.End))
+            {
+                statements.Add(Statement());
+                if (!_tokenizer.MatchToken(TokenType.SemiColon)) return CreateErrorExpression(";");
+            }
+
+            return new ProgramExpression(statements);
         }
 
         public IExpression ParseExpression()
@@ -38,8 +47,34 @@
             return expression;
         }
 
+        public static IExpression Parse(string input)
+        {
+            Tokenizer tokenizer = new Tokenizer(input);
+            Parser parser = new Parser(tokenizer);
+            return parser.ParseExpression();
+        }
+        #endregion
+
         #region Grammar Methods
-        public IExpression Expression()
+        IExpression Statement()
+        {
+            if (_tokenizer.CurrentToken.Type == TokenType.Var)
+                return VariableDeclaration();
+            return ParseExpression();
+        }
+
+        IExpression VariableDeclaration()
+        {
+            if (!_tokenizer.MatchToken(TokenType.Var)) CreateErrorExpression("var");
+
+            Token token;
+            if (!_tokenizer.MatchToken(TokenType.Var, out token)) CreateErrorExpression(";");
+            if (!_tokenizer.MatchToken(TokenType.Equal)) CreateErrorExpression("=");
+
+            return new VariableDeclarationExpression(token.Value, ParseExpression());
+        }
+
+        IExpression Expression()
         {
             var expression = MathExpression();
             Token token;
@@ -56,14 +91,14 @@
                 }
                 else
                 {
-                    expression = new ErrorExpression(string.Format("Expected colon but found: {0}", _tokenizer.CurrentToken));
+                    expression = CreateErrorExpression(":");
                 }
             }
 
             return expression;
         }
 
-        public IExpression MathExpression()
+        IExpression MathExpression()
         {
             IExpression left = Term();
 
@@ -79,7 +114,7 @@
             return left;
         }
 
-        public IExpression Term()
+        IExpression Term()
         {
             IExpression left = Factor();
 
@@ -95,7 +130,7 @@
             return left;
         }
 
-        public IExpression Factor()
+        IExpression Factor()
         {
             bool isMinusExpression = _tokenizer.MatchToken(TokenType.Minus);
             IExpression expression;
@@ -113,7 +148,7 @@
             return expression;
         }
 
-        public IExpression PositiveFactor()
+        IExpression PositiveFactor()
         {
             IExpression result;
             Token token;
@@ -128,22 +163,27 @@
                 _tokenizer.GetNextToken();
                 result = Expression();
                 if (!_tokenizer.MatchToken(TokenType.RightParenthesis))
-                {
-                    var error = "Expected closing parenthesis, but {0} found.";
-                    result = new ErrorExpression(string.Format(error, _tokenizer.CurrentToken.Type));
-                }
+                    result = CreateErrorExpression(")");
                 else
-                {
                     _tokenizer.GetNextToken();
-                }
+            }
+            else if (_tokenizer.MatchToken(TokenType.Identifier, out token))
+            {
+                result = new LookUpExpression(token.Value);
             }
             else
             {
-                return new ErrorExpression(string.Format("Unexpected token: {0}", token.Type));
+                return new ErrorExpression(string.Format("Unexpected token: {0}", _tokenizer.CurrentToken.Value));
             }
 
             return result;
         }
         #endregion
+
+        ErrorExpression CreateErrorExpression(string expected)
+        {
+            return new ErrorExpression(string.Format(
+                "Expected <{0}>, but <{1}> found.", expected, _tokenizer.CurrentToken.Value));
+        }
     }
 }
