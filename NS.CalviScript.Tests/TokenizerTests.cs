@@ -23,20 +23,20 @@ namespace NS.CalviScript.Tests
             Assert.That(token.Type, Is.EqualTo(expected));
         }
 
-        [Test]
-        public void should_parse_two_tokens()
+        [TestCase("(", TokenType.LeftParenthesis, TokenType.End)]
+        [TestCase("()", TokenType.LeftParenthesis, TokenType.RightParenthesis)]
+        [TestCase("( )", TokenType.LeftParenthesis, TokenType.RightParenthesis)]
+        [TestCase("11", TokenType.Number, TokenType.End)]
+        [TestCase("1 1", TokenType.Number, TokenType.Number)]
+        public void should_parse_two_tokens(string input, TokenType type1, TokenType type2)
         {
-            Tokenizer tokenizer = new Tokenizer("+())");
+            Tokenizer tokenizer = new Tokenizer(input);
 
             Token t1 = tokenizer.GetNextToken();
             Token t2 = tokenizer.GetNextToken();
-            Token t3 = tokenizer.GetNextToken();
-            Token t4 = tokenizer.GetNextToken();
 
-            Assert.That(t1.Type, Is.EqualTo(TokenType.Plus));
-            Assert.That(t2.Type, Is.EqualTo(TokenType.LeftParenthesis));
-            Assert.That(t3.Type, Is.EqualTo(TokenType.RightParenthesis));
-            Assert.That(t4.Type, Is.EqualTo(TokenType.RightParenthesis));
+            Assert.That(t1.Type, Is.EqualTo(type1));
+            Assert.That(t2.Type, Is.EqualTo(type2));
         }
 
         [Test]
@@ -53,32 +53,15 @@ namespace NS.CalviScript.Tests
             Assert.That(t3.Type, Is.EqualTo(TokenType.RightParenthesis));
         }
 
-        [Test]
-        public void should_parse_numbers()
+        [TestCase("0")]
+        [TestCase("1")]
+        [TestCase("123456789")]
+        [TestCase("999")]
+        public void should_parse_numbers(string input)
         {
-            Tokenizer tokenizer = new Tokenizer("(10 + 59) + 12 )");
-
-            Token t1 = tokenizer.GetNextToken();
-            Token t2 = tokenizer.GetNextToken();
-            Token t3 = tokenizer.GetNextToken();
-            Token t4 = tokenizer.GetNextToken();
-            Token t5 = tokenizer.GetNextToken();
-            Token t6 = tokenizer.GetNextToken();
-            Token t7 = tokenizer.GetNextToken();
-            Token t8 = tokenizer.GetNextToken();
-
-            Assert.That(t1.Type, Is.EqualTo(TokenType.LeftParenthesis));
-            Assert.That(t2.Type, Is.EqualTo(TokenType.Number));
-            Assert.That(t2.Value, Is.EqualTo("10"));
-            Assert.That(t3.Type, Is.EqualTo(TokenType.Plus));
-            Assert.That(t4.Type, Is.EqualTo(TokenType.Number));
-            Assert.That(t4.Value, Is.EqualTo("59"));
-            Assert.That(t5.Type, Is.EqualTo(TokenType.RightParenthesis));
-            Assert.That(t6.Type, Is.EqualTo(TokenType.Plus));
-            Assert.That(t7.Type, Is.EqualTo(TokenType.Number));
-            Assert.That(t7.Value, Is.EqualTo("12"));
-            Assert.That(t8.Type, Is.EqualTo(TokenType.RightParenthesis));
-
+            Tokenizer tokenizer = new Tokenizer(input);
+            var token = tokenizer.GetNextToken();
+            Assert.That(token.Type, Is.EqualTo(TokenType.Number));
         }
 
         [Test]
@@ -125,25 +108,33 @@ namespace NS.CalviScript.Tests
             Assert.That(t4.Type, Is.EqualTo(TokenType.End));
         }
 
-        [Test]
-        public void should_parse_identifiers()
+        [TestCase("_", TokenType.Identifier)]
+        [TestCase("_0", TokenType.Identifier)]
+        [TestCase("_0var", TokenType.Identifier)]
+        [TestCase("_0name", TokenType.Identifier)]
+        [TestCase("var", TokenType.Var)]
+        [TestCase("VAR", TokenType.Identifier)]
+        [TestCase("var0", TokenType.Identifier)]
+        [TestCase("_var", TokenType.Identifier)]
+        [TestCase("_Var", TokenType.Identifier)]
+        [TestCase("_var0", TokenType.Identifier)]
+        [TestCase("__var", TokenType.Identifier)]
+        [TestCase("__Var", TokenType.Identifier)]
+        [TestCase("__var0", TokenType.Identifier)]
+        [TestCase("name", TokenType.Identifier)]
+        [TestCase("NAME", TokenType.Identifier)]
+        [TestCase("name0", TokenType.Identifier)]
+        [TestCase("_name", TokenType.Identifier)]
+        [TestCase("_Name", TokenType.Identifier)]
+        [TestCase("_name0", TokenType.Identifier)]
+        [TestCase("__name", TokenType.Identifier)]
+        [TestCase("__Name", TokenType.Identifier)]
+        [TestCase("__name0", TokenType.Identifier)]
+        public void should_parse_identifiers(string input, TokenType expected)
         {
-            Tokenizer tokenizer = new Tokenizer("var titi = 42;");
-
-            Token t1 = tokenizer.GetNextToken();
-            Token t2 = tokenizer.GetNextToken();
-            Token t3 = tokenizer.GetNextToken();
-            Token t4 = tokenizer.GetNextToken();
-            Token t5 = tokenizer.GetNextToken();
-            Token t6 = tokenizer.GetNextToken();
-
-            Assert.That(t1.Type, Is.EqualTo(TokenType.Var));
-            Assert.That(t2.Type, Is.EqualTo(TokenType.Identifier));
-            Assert.That(t2.Value, Is.EqualTo("titi"));
-            Assert.That(t3.Type, Is.EqualTo(TokenType.Equal));
-            Assert.That(t4.Type, Is.EqualTo(TokenType.Number));
-            Assert.That(t5.Type, Is.EqualTo(TokenType.SemiColon));
-            Assert.That(t6.Type, Is.EqualTo(TokenType.End));
+            Tokenizer tokenizer = new Tokenizer(input);
+            var type = tokenizer.GetNextToken();
+            Assert.That(type.Type, Is.EqualTo(expected));
         }
 
         [TestCase("+", TokenType.Plus)]
@@ -160,13 +151,8 @@ namespace NS.CalviScript.Tests
         [TestCase("0", TokenType.Number)]
         [TestCase("1", TokenType.Number)]
         [TestCase("01", TokenType.Error)]
-        [TestCase("0name", TokenType.Error)]
         [TestCase("name", TokenType.Identifier)]
-        [TestCase("_name", TokenType.Identifier)]
-        [TestCase("__name", TokenType.Identifier)]
-        [TestCase("_0name", TokenType.Identifier)]
-        [TestCase("name0", TokenType.Identifier)]
-        [TestCase("_name0", TokenType.Identifier)]
+        [TestCase("0name", TokenType.Error)]
         public void should_match_types(string input, TokenType type)
         {
             Token token;
