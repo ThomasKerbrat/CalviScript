@@ -40,10 +40,9 @@ namespace NS.CalviScript
 
         public int Visit(TernaryExpression expression)
         {
-            if (expression.PredicateExpression.Accept(this) >= 0)
-                return expression.TrueExpression.Accept(this);
-            else
-                return expression.FalseExpression.Accept(this);
+            return expression.PredicateExpression.Accept(this) >= 0 ?
+                expression.TrueExpression.Accept(this) :
+                expression.FalseExpression.Accept(this);
         }
 
         public int Visit(ErrorExpression expression)

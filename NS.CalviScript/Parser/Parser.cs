@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NS.CalviScript
+﻿namespace NS.CalviScript
 {
     /// <summary>
     /// start: expression EOI
@@ -126,11 +124,11 @@ namespace NS.CalviScript
             else if (_tokenizer.MatchToken(TokenType.LeftParenthesis))
             {
                 _tokenizer.GetNextToken();
-                result = MathExpression();
+                result = Expression();
                 if (!_tokenizer.MatchToken(TokenType.RightParenthesis))
                 {
                     var error = "Expected closing parenthesis, but {0} found.";
-                    result = new ErrorExpression(string.Format(error, _tokenizer.CurrentToken.Type.ToString()));
+                    result = new ErrorExpression(string.Format(error, _tokenizer.CurrentToken.Type));
                 }
                 else
                 {

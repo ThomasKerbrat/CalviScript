@@ -23,17 +23,15 @@ namespace NS.CalviScript.Tests
 
         [TestCase("2 + 7 / 12", "(2 + (7 / 12))")]
         [TestCase("70 % (50 - 4 * 6)", "(70 % (50 - (4 * 6)))")]
-        [TestCase("1?2:3", "(1 ? 2 : 3)")]
+        [TestCase("1 ? 2 : 3", "(1 ? 2 : 3)")]
+        [TestCase("12 * (-2 + 5) ? (1 ? 5 * 5 : 0) : (-5 * 5 ? 8 : 8 % 3)", "((12 * (-2 + 5)) ? (1 ? (5 * 5) : 0) : ((-5 * 5) ? 8 : (8 % 3)))")]
         public void should_stringify_to_infix(string input, string expected)
         {
-            Tokenizer tokenizer = new Tokenizer(input);
-            Parser parser = new Parser(tokenizer);
-            IExpression expression = parser.ParseExpression();
             var visitor = new InfixStringVisitor();
 
-            string result = visitor.Visit(expression);
+            IExpression expression = Parser.Parse(input);
 
-            Assert.That(result, Is.EqualTo(expected));
+            Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
         }
 
         [TestCase("1", 1)]
