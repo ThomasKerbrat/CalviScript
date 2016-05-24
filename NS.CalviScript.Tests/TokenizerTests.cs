@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace NS.CalviScript.Tests
 {
@@ -121,6 +122,27 @@ namespace NS.CalviScript.Tests
             Assert.That(t2.Type, Is.EqualTo(TokenType.Plus));
             Assert.That(t3.Type, Is.EqualTo(TokenType.Number));
             Assert.That(t4.Type, Is.EqualTo(TokenType.End));
+        }
+
+        [Test]
+        public void should_parse_identifiers()
+        {
+            Tokenizer tokenizer = new Tokenizer("var titi = 42;");
+
+            Token t1 = tokenizer.GetNextToken();
+            Token t2 = tokenizer.GetNextToken();
+            Token t3 = tokenizer.GetNextToken();
+            Token t4 = tokenizer.GetNextToken();
+            Token t5 = tokenizer.GetNextToken();
+            Token t6 = tokenizer.GetNextToken();
+
+            Assert.That(t1.Type, Is.EqualTo(TokenType.Var));
+            Assert.That(t2.Type, Is.EqualTo(TokenType.Identifier));
+            Assert.That(t2.Value, Is.EqualTo("titi"));
+            Assert.That(t3.Type, Is.EqualTo(TokenType.Equal));
+            Assert.That(t4.Type, Is.EqualTo(TokenType.Number));
+            Assert.That(t5.Type, Is.EqualTo(TokenType.SemiColon));
+            Assert.That(t6.Type, Is.EqualTo(TokenType.End));
         }
     }
 }

@@ -24,6 +24,8 @@ namespace NS.CalviScript
         bool IsWhiteSpace => char.IsWhiteSpace(Peek());
 
         bool IsNumber => char.IsDigit(Peek());
+
+        bool IsIdentifier => char.IsLetter(Peek()) || Peek() == '_';
         #endregion
 
         public Token GetNextToken()
@@ -46,7 +48,10 @@ namespace NS.CalviScript
             else if (Peek() == ')') result = HandleSimpleToken(TokenType.RightParenthesis);
             else if (Peek() == '?') result = HandleSimpleToken(TokenType.QuestionMark);
             else if (Peek() == ':') result = HandleSimpleToken(TokenType.Colon);
+            else if (Peek() == '=') result = HandleSimpleToken(TokenType.Equal);
+            else if (Peek() == ';') result = HandleSimpleToken(TokenType.SemiColon);
             else if (IsNumber) result = HandleNumber();
+            else if (IsIdentifier) result = HandleIdentifier();
             else result = new Token(TokenType.Error, Peek());
 
             CurrentToken = result;
@@ -54,7 +59,7 @@ namespace NS.CalviScript
         }
 
         #region Handle Methods
-        private void HandleWhiteSpace()
+        void HandleWhiteSpace()
         {
             Debug.Assert(IsWhiteSpace);
             do
@@ -78,7 +83,7 @@ namespace NS.CalviScript
             return new Token(type, Peek(-1));
         }
 
-        private Token HandleNumber()
+        Token HandleNumber()
         {
             Debug.Assert(IsNumber);
 
@@ -99,6 +104,21 @@ namespace NS.CalviScript
             return new Token(TokenType.Number, sb.ToString());
         }
 
+        Token HandleIdentifier()
+        {
+            Debug.Assert(IsIdentifier);
+
+            var sb = new StringBuilder();
+            do
+            {
+                sb.Append(Peek());
+                Forward();
+            } while (!IsEnd && (IsIdentifier || char.IsDigit(Peek())));
+
+            string identifier = sb.ToString();
+            if (identifier == "var") return new Token(TokenType.Var, identifier);
+            else return new Token(TokenType.Identifier, identifier);
+        }
         #endregion
 
         #region Move methods

@@ -17,6 +17,11 @@
         RightParenthesis,
         QuestionMark,
         Colon,
+        Equal,
+        SemiColon,
+
+        Identifier,
+        Var,
 
         End
     }
