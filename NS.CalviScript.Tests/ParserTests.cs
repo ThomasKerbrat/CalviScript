@@ -10,6 +10,7 @@ namespace NS.CalviScript.Tests
         [TestCase("10 + (11 + 50)","[+ 10 [+ 11 50]]")]
         [TestCase("2 + 3 * 5", "[+ 2 [* 3 5]]")]
         [TestCase("2 * -7", "[* 2 [- 7]]")]
+        [TestCase("5 + 7 ? -8 * 2 : 7 * 3 ? 0 : 15", "[? [+ 5 7] [* [- 8] 2] [? [* 7 3] 0 15]]")]
         public void should_parse_some_complex_operation(string input, string expected)
         {
             var visitor = new LispyStringVisitor();
@@ -37,6 +38,16 @@ namespace NS.CalviScript.Tests
                     new ConstantExpression(8)));
 
             Assert.That(visitor.Visit(expression), Is.EqualTo("((2 + 7) + (-5 * 8))"));
+        }
+
+        [TestCase("1 ? 2 : 3", "[? 1 2 3]")]
+        public void should_parse_ternary_expressions(string input, string expected)
+        {
+            var visitor = new LispyStringVisitor();
+
+            var expression = Parser.Parse(input);
+
+            Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
         }
     }
 }

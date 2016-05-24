@@ -2,13 +2,15 @@
 {
     public interface IVisitor<T>
     {
-        T Visit(BinaryExpression expression);
-
         T Visit(ConstantExpression expression);
 
-        T Visit(ErrorExpression expression);
-
         T Visit(UnaryExpression expression);
+
+        T Visit(BinaryExpression expression);
+
+        T Visit(TernaryExpression expression);
+
+        T Visit(ErrorExpression expression);
     }
 
     public static class IVisitorExtentions

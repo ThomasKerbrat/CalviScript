@@ -1,13 +1,14 @@
-﻿namespace NS.CalviScript
+﻿using System;
+
+namespace NS.CalviScript
 {
     /// <summary>
-    /// Grammer summary:
-    /// start: ternary EOI
-    /// ternary: expression('?' ternary ':' ternary)
-    /// expression: term(('+' | '-') term)
-    /// term: factor(('*' | '/' | '%') factor)
-    /// factor: '-'? positiveFacto
-    /// positiveFactor: NUMBER | ('(' ternary ')')
+    /// start: expression EOI
+    /// expression: mathExpression ('?' expression ':' expression)?
+    /// mathExpression: term (('+' | '-') term)*
+    /// term: factor (('*' | '/' | '%') factor)*
+    /// factor: '-'? positiveFactor
+    /// positiveFactor: NUMBER | ('(' expression ')')
     /// </summary>
     public class Parser
     {
@@ -39,6 +40,30 @@
 
         #region Grammar Methods
         public IExpression Expression()
+        {
+            var expression = MathExpression();
+            Token token;
+
+            if (_tokenizer.MatchToken(TokenType.QuestionMark))
+            {
+                _tokenizer.GetNextToken();
+                IExpression trueExpression = Expression();
+                if (_tokenizer.MatchToken(TokenType.Colon))
+                {
+                    _tokenizer.GetNextToken();
+                    IExpression falseExpresion = Expression();
+                    expression = new TernaryExpression(expression, trueExpression, falseExpresion);
+                }
+                else
+                {
+                    expression = new ErrorExpression(string.Format("Expected colon but found: {0}", _tokenizer.CurrentToken));
+                }
+            }
+
+            return expression;
+        }
+
+        public IExpression MathExpression()
         {
             IExpression left = Term();
 
@@ -101,7 +126,7 @@
             else if (_tokenizer.MatchToken(TokenType.LeftParenthesis))
             {
                 _tokenizer.GetNextToken();
-                result = Expression();
+                result = MathExpression();
                 if (!_tokenizer.MatchToken(TokenType.RightParenthesis))
                 {
                     var error = "Expected closing parenthesis, but {0} found.";
