@@ -44,5 +44,18 @@ namespace NS.CalviScript.Tests
 
             Assert.That(visitor.Result, Is.EqualTo(expected));
         }
+
+        [Test]
+        public void should_stringify_to_lispy_using_generic_visitor()
+        {
+            Tokenizer tokenizer = new Tokenizer("5 + 10 % 2");
+            Parser parser = new Parser(tokenizer);
+            IExpression expression = parser.ParseExpression();
+            GenericLispyStringVisitor visitor = new GenericLispyStringVisitor();
+
+            string result = visitor.Visit(expression);
+
+            Assert.That(result, Is.EqualTo("[+ 5 [% 10 2]]"));
+        }
     }
 }
