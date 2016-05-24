@@ -29,7 +29,7 @@ namespace NS.CalviScript.Tests
         {
             var visitor = new InfixStringVisitor();
 
-            IExpression expression = Parser.Parse(input);
+            IExpression expression = Parser.ParseExpression(input);
 
             Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
         }
@@ -42,7 +42,7 @@ namespace NS.CalviScript.Tests
         [TestCase("-1 ? 2 : 3", 3)]
         public void should_evaluate(string input, int expected)
         {
-            IExpression expression = Parser.Parse(input);
+            IExpression expression = Parser.ParseExpression(input);
             EvaluationVisitor visitor = new EvaluationVisitor();
 
             int result = visitor.Visit(expression);

@@ -15,29 +15,26 @@ namespace NS.CalviScript.Tests
         {
             var visitor = new LispyStringVisitor();
 
-            IExpression expression = Parser.Parse(input);
+            IExpression expression = Parser.ParseExpression(input);
 
             Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
         }
 
-        [Test]
-        public void should_stringify()
+        [TestCase("-0", "[- 0]")]
+        [TestCase("-1", "[- 1]")]
+        public void should_parse_unary_expressions(string input, string expected)
         {
-            var visitor = new InfixStringVisitor();
-            IExpression expression = new BinaryExpression(
-                TokenType.Plus,
-                new BinaryExpression(
-                    TokenType.Plus,
-                    new ConstantExpression(2),
-                    new ConstantExpression(7)),
-                new BinaryExpression(
-                    TokenType.Mult,
-                    new UnaryExpression(
-                        TokenType.Minus,
-                        new ConstantExpression(5)),
-                    new ConstantExpression(8)));
+            var visitor = new LispyStringVisitor();
+            var expression = Parser.ParseExpression(input);
+            Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
+        }
 
-            Assert.That(visitor.Visit(expression), Is.EqualTo("((2 + 7) + (-5 * 8))"));
+        [TestCase("1 + 1", "[+ 1 1]")]
+        public void should_parse_binary_expressions(string input, string expected)
+        {
+            var visitor = new LispyStringVisitor();
+            var expression = Parser.ParseExpression(input);
+            Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
         }
 
         [TestCase("1 ? 2 : 3", "[? 1 2 3]")]
@@ -45,15 +42,11 @@ namespace NS.CalviScript.Tests
         public void should_parse_ternary_expressions(string input, string expected)
         {
             var visitor = new LispyStringVisitor();
-
-            var expression = Parser.Parse(input);
-
+            var expression = Parser.ParseExpression(input);
             Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
         }
 
-        [TestCase(
-            "var test = 3 + 50; var test2 = test * 3;",
-            @"[S [VD ""test"" [+ 3 50]] [VD ""test2"" [* [LU ""test""] 3]]]")]
+        [TestCase("var test = 3 + 50; var test2 = test * 3;", @"[S [VD ""test"" [+ 3 50]] [VD ""test2"" [* [LU ""test""] 3]]]")]
         public void should_parse_program(string input, string expected)
         {
             var tokenizer = new Tokenizer(input);
