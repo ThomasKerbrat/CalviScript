@@ -44,9 +44,12 @@
     <Compile Include="Parser\ErrorExpression.cs" />
     <Compile Include="Parser\IExpression.cs" />
     <Compile Include="Parser\ConstantExpression.cs" />
+    <Compile Include="Parser\LookUpExpression.cs" />
     <Compile Include="Parser\Parser.cs" />
+    <Compile Include="Parser\ProgramExpression.cs" />
     <Compile Include="Parser\TernaryExpression.cs" />
     <Compile Include="Parser\UnaryExpression.cs" />
+    <Compile Include="Parser\VariableDeclarationExpression.cs" />
     <Compile Include="Tokenizer\Token.cs" />
     <Compile Include="Tokenizer\Tokenizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
