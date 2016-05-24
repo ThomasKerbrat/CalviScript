@@ -15,6 +15,8 @@
 
         LeftParenthesis,
         RightParenthesis,
+        QuestionMark,
+        Colon,
 
         End
     }

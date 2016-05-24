@@ -1,5 +1,14 @@
 ﻿namespace NS.CalviScript
 {
+    /// <summary>
+    /// Grammer summary:
+    /// start: ternary EOI
+    /// ternary: expression('?' ternary ':' ternary)
+    /// expression: term(('+' | '-') term)
+    /// term: factor(('*' | '/' | '%') factor)
+    /// factor: '-'? positiveFacto
+    /// positiveFactor: NUMBER | ('(' ternary ')')
+    /// </summary>
     public class Parser
     {
         readonly Tokenizer _tokenizer;
@@ -29,12 +38,6 @@
         }
 
         #region Grammar Methods
-        // start: expression EOI
-        // expression: term (('+' | '-') term)*
-        // term: factor (('*' | '/' | '%') factor)*
-        // factor: '-'? positiveFactor
-        // positiveFactor: NUMBER | ('(' expression ')')
-
         public IExpression Expression()
         {
             IExpression left = Term();

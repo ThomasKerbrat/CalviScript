@@ -12,6 +12,8 @@ namespace NS.CalviScript.Tests
         [TestCase("%", TokenType.Modulo)]
         [TestCase("(", TokenType.LeftParenthesis)]
         [TestCase(")", TokenType.RightParenthesis)]
+        [TestCase("?", TokenType.QuestionMark)]
+        [TestCase(":", TokenType.Colon)]
         public void should_parse_string_containing_one_char(string input, TokenType expected)
         {
             Tokenizer tokenizer = new Tokenizer(input);
