@@ -11,9 +11,7 @@ namespace NS.CalviScript.Tests
         [TestCase("1 ? 2 : 3", "[? 1 2 3]")]
         public void should_stringify_to_lispy(string input, string expected)
         {
-            Tokenizer tokenizer = new Tokenizer(input);
-            Parser parser = new Parser(tokenizer);
-            IExpression expression = parser.ParseExpression();
+            IExpression expression = Parser.ParseExpression(input);
             var visitor = new LispyStringVisitor();
 
             string result = visitor.Visit(expression);
