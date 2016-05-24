@@ -29,6 +29,12 @@
         }
 
         #region Grammar Methods
+        // start: expression EOI
+        // expression: term (('+' | '-') term)*
+        // term: factor (('*' | '/' | '%') factor)*
+        // factor: '-'? positiveFactor
+        // positiveFactor: NUMBER | ('(' expression ')')
+
         public IExpression Expression()
         {
             IExpression left = Term();
@@ -62,6 +68,24 @@
         }
 
         public IExpression Factor()
+        {
+            bool isMinusExpression = _tokenizer.MatchToken(TokenType.Minus);
+            IExpression expression;
+
+            if (isMinusExpression)
+            {
+                _tokenizer.GetNextToken();
+                expression = new UnaryExpression(TokenType.Minus, PositiveFactor());
+            }
+            else
+            {
+                expression = PositiveFactor();
+            }
+
+            return expression;
+        }
+
+        public IExpression PositiveFactor()
         {
             IExpression result;
             Token token;

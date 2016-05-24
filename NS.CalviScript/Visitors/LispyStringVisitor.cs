@@ -13,5 +13,10 @@
                 TokenTypeHelpers.TokenTypeToString(expression.OperatorType),
                 expression.LeftExpression.Accept(this),
                 expression.RightExpression.Accept(this));
+
+        public string Visit(UnaryExpression expression)
+            => string.Format("[{0} {1}]",
+                TokenTypeHelpers.TokenTypeToString(expression.OperatorType),
+                expression.Expression.Accept(this));
     }
 }

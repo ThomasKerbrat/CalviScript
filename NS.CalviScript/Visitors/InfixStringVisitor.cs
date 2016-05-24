@@ -15,5 +15,10 @@ namespace NS.CalviScript
                 expression.LeftExpression.Accept(this),
                 TokenTypeHelpers.TokenTypeToString(expression.OperatorType),
                 expression.RightExpression.Accept(this));
+
+        public string Visit(UnaryExpression expression)
+            => string.Format("{0}{1}",
+                TokenTypeHelpers.TokenTypeToString(expression.OperatorType),
+                expression.Expression.Accept(this));
     }
 }

@@ -31,7 +31,9 @@ namespace NS.CalviScript.Tests
                     new ConstantExpression(7)),
                 new BinaryExpression(
                     TokenType.Mult,
-                    new ConstantExpression(5),
+                    new UnaryExpression(
+                        TokenType.Minus,
+                        new ConstantExpression(5)),
                     new ConstantExpression(8)));
 
             Assert.That(visitor.Visit(expression), Is.EqualTo("((2 + 7) + (-5 * 8))"));

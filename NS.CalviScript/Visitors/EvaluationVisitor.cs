@@ -30,5 +30,16 @@ namespace NS.CalviScript
                     throw new ArgumentException("Not an operator");
             }
         }
+
+        public int Visit(UnaryExpression expression)
+        {
+            switch (expression.OperatorType)
+            {
+                case TokenType.Minus:
+                    return -1 * expression.Expression.Accept(this);
+                default:
+                    throw new ArgumentException("Not an operator.");
+            }
+        }
     }
 }

@@ -7,6 +7,8 @@
         T Visit(ConstantExpression expression);
 
         T Visit(ErrorExpression expression);
+
+        T Visit(UnaryExpression expression);
     }
 
     public static class IVisitorExtentions
