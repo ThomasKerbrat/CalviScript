@@ -1,12 +1,14 @@
 ﻿namespace NS.CalviScript
 {
     /// <summary>
-    /// start: expression EOI
+    /// *program: (statement ';')* EOI
+    /// *statement: variableDeclaration | expression
+    /// *variableDeclaration: VAR IDENTIFIER '=' expression
     /// expression: mathExpression ('?' expression ':' expression)?
     /// mathExpression: term (('+' | '-') term)*
     /// term: factor (('*' | '/' | '%') factor)*
     /// factor: '-'? positiveFactor
-    /// positiveFactor: NUMBER | ('(' expression ')')
+    /// *positiveFactor: NUMBER | IDENTIFIER | ('(' expression ')')
     /// </summary>
     public class Parser
     {
