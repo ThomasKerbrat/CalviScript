@@ -50,7 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IVisitorTests.cs" />
+    <Compile Include="VisitorTests.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="TokenizerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
