@@ -24,7 +24,7 @@ namespace NS.CalviScript
             => Result = expression.Value.ToString();
 
         public void Visit(ErrorExpression expression)
-            => string.Format("[Error {0}]", expression.Message);
+            => Result = string.Format("[Error {0}]", expression.Message);
 
         // TODO: Remove this shit.
         string TokenTypeToString(TokenType type)
