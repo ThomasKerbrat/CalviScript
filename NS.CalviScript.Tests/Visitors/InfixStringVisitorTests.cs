@@ -14,13 +14,7 @@ namespace NS.CalviScript.Tests.Visitors
 
             Assert.That(result, Is.EqualTo(expected));
         }
-
-        [TestCase("", "")]
-        [TestCase("1;", "1;")]
-        [TestCase("1 + 1;", "(1 + 1);")]
-        [TestCase("var test = 1 + 1;", "var test = (1 + 1);")]
-        [TestCase("var test = 1 + 1; var test2 = test - 8;", "var test = (1 + 1); var test2 = (test - 8);")]
-        public void should_visit_program_ast(string input, string expected)
+        void programBoilerplate(string input, string expected)
         {
             var visitor = new InfixStringVisitor();
             var expression = Parser.ParseProgram(input);
@@ -29,6 +23,14 @@ namespace NS.CalviScript.Tests.Visitors
 
             Assert.That(result, Is.EqualTo(expected));
         }
+
+        [TestCase("", "")]
+        [TestCase("1;", "1;")]
+        [TestCase("1 + 1;", "(1 + 1);")]
+        [TestCase("var test = 1 + 1;", "var test = (1 + 1);")]
+        [TestCase("var test = 1 + 1; var test2 = test - 8;", "var test = (1 + 1); var test2 = (test - 8);")]
+        public void should_visit_program_ast(string input, string expected)
+            => programBoilerplate(input, expected);
 
         [TestCase("0", "0")]
         [TestCase("5", "5")]
@@ -59,5 +61,11 @@ namespace NS.CalviScript.Tests.Visitors
         [TestCase("a = b + -9", "a = (b + -9)")]
         public void should_visit_assignation_ast(string input, string expected)
             => boilerplate(input, expected);
+
+        [TestCase("a = 1;", "a = 1;")]
+        [TestCase("a = 1 + 1;", "a = (1 + 1);")]
+        [TestCase("a = b + -9;", "a = (b + -9);")]
+        public void should_visit_variableDeclaration_ast(string input, string expected)
+            => programBoilerplate(input, expected);
     }
 }

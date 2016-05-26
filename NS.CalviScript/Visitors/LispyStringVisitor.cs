@@ -52,9 +52,8 @@ namespace NS.CalviScript
                 expression.FalseExpression.Accept(this));
 
         public string Visit(VariableDeclarationExpression expression)
-            => string.Format("[VD \"{0}\" {1}]",
-                expression.Identifier,
-                expression.Expression.Accept(this));
+            => string.Format("[VD \"{0}\"]",
+                expression.Identifier);
 
         public string Visit(ErrorExpression expression)
             => string.Format("[Error {0}]", expression.Message);

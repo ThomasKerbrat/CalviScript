@@ -15,8 +15,6 @@ namespace NS.CalviScript
 
         public string Identifier { get; }
 
-        public IExpression Expression { get; set; }
-
         public T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);
