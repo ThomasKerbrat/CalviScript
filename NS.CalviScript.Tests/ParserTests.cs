@@ -55,7 +55,7 @@ namespace NS.CalviScript.Tests
             var parser = new Parser(tokenizer);
             var visitor = new LispyStringVisitor();
 
-            IExpression expression = parser.ParseProgram();
+            IExpression expression = parser.ParseBlock();
 
             Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
         }

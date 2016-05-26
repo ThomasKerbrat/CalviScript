@@ -23,7 +23,7 @@ namespace NS.CalviScript.Tests.Visitors
         public void should_visit_program_ast(string input, string expected)
         {
             var visitor = new LispyStringVisitor();
-            var expression = Parser.ParseProgram(input);
+            var expression = Parser.ParseBlock(input);
 
             var result = visitor.Visit(expression);
 

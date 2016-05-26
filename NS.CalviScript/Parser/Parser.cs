@@ -19,9 +19,9 @@ namespace NS.CalviScript
         /// Parse a program as defined in the "program" rule in formal grammar.
         /// </summary>
         /// <returns>The program AST.</returns>
-        public IExpression ParseProgram()
+        public IExpression ParseBlock()
         {
-            IExpression result = Program();
+            IExpression result = Block();
             Token token;
             if (!_tokenizer.MatchToken(TokenType.End, out token))
                 return CreateErrorExpression("EOI");
@@ -34,11 +34,11 @@ namespace NS.CalviScript
         /// </summary>
         /// <param name="input">A string input to give to the <see cref="Tokenizer"/>.</param>
         /// <returns>The program expression.</returns>
-        public static IExpression ParseProgram(string input)
+        public static IExpression ParseBlock(string input)
         {
             Tokenizer tokenizer = new Tokenizer(input);
             Parser parser = new Parser(tokenizer);
-            return parser.ParseProgram();
+            return parser.ParseBlock();
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace NS.CalviScript
         #endregion
 
         #region Grammar Methods
-        IExpression Program()
+        IExpression Block()
         {
             var statements = new List<IExpression>();
 
