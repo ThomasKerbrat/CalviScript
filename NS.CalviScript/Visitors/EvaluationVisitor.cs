@@ -70,6 +70,34 @@ namespace NS.CalviScript
                 : expression;
         }
 
+        public override IExpression Visit(TernaryExpression expression)
+        {
+            var predicate = expression.PredicateExpression.Accept(this);
+            var @true = expression.TrueExpression.Accept(this);
+            var @false = expression.FalseExpression.Accept(this);
+
+            if (predicate is UndefinedExpression)
+                return predicate;
+            if (@true is UndefinedExpression)
+                return @true;
+            if (@false is UndefinedExpression)
+                return @false;
+
+            if (predicate is ConstantExpression && @true is ConstantExpression && @false is ConstantExpression)
+            {
+                var constPredicate = (ConstantExpression)predicate;
+                var constTrue = (ConstantExpression)@true;
+                var constFalse = (ConstantExpression)@false;
+                return constPredicate.Value >= 0
+                    ? @true
+                    : @false;
+            }
+
+            return predicate != expression.PredicateExpression || @true != expression.TrueExpression || @false != expression.FalseExpression
+                ? new TernaryExpression(predicate, @true, @false)
+                : expression;
+        }
+
         public override IExpression Visit(AssignExpression expression)
         {
             var result = expression.Expression.Accept(this);
