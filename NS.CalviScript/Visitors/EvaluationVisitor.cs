@@ -1,67 +1,73 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace NS.CalviScript
 {
-    public class EvaluationVisitor : IVisitor<int>
+    public class EvaluationVisitor : StandardVisitor
     {
-        public int Visit(BlockExpression expression)
+        private Dictionary<string, int> _globalContext;
+
+        public EvaluationVisitor(Dictionary<string, int> globalContext)
         {
-            throw new NotImplementedException();
+            _globalContext = globalContext;
         }
 
-        public int Visit(ConstantExpression expression)
-            => expression.Value;
-
-        int IVisitor<int>.Visit(LookUpExpression expression)
+        public override IExpression Visit(BlockExpression expression)
         {
-            throw new NotImplementedException();
-        }
-
-        public int Visit(UnaryExpression expression)
-        {
-            switch (expression.OperatorType)
+            IExpression last = UndefinedExpression.Default;
+            foreach (var statement in expression.Statements)
             {
-                case TokenType.Minus:
-                    return -1 * expression.Expression.Accept(this);
-                default:
-                    throw new ArgumentException("Not an operator.");
+                last = statement.Accept(this);
+            }
+            return last;
+        }
+
+        public override IExpression Visit(LookUpExpression expression)
+        {
+            int value;
+            if (_globalContext.TryGetValue(expression.Identifier, out value))
+            {
+                return new ConstantExpression(value);
+            }
+            else
+            {
+                return new ErrorExpression("Reference not found: " + expression.Identifier);
             }
         }
 
-        public int Visit(BinaryExpression expression)
+        public override IExpression Visit(BinaryExpression expression)
         {
-            switch (expression.OperatorType)
+            IExpression left = expression.LeftExpression.Accept(this);
+            IExpression right = expression.RightExpression.Accept(this);
+
+            if (left is UndefinedExpression)
+                return left;
+            if (right is UndefinedExpression)
+                return right;
+
+            if (left is ConstantExpression && right is ConstantExpression)
             {
-                case TokenType.Plus:
-                    return expression.LeftExpression.Accept(this) + expression.RightExpression.Accept(this);
-                case TokenType.Minus:
-                    return expression.LeftExpression.Accept(this) - expression.RightExpression.Accept(this);
-                case TokenType.Mult:
-                    return expression.LeftExpression.Accept(this) * expression.RightExpression.Accept(this);
-                case TokenType.Div:
-                    return expression.LeftExpression.Accept(this) / expression.RightExpression.Accept(this);
-                case TokenType.Modulo:
-                    return expression.LeftExpression.Accept(this) % expression.RightExpression.Accept(this);
-                default:
-                    throw new ArgumentException("Not an operator");
+                var constLeft = (ConstantExpression)left;
+                var constRight = (ConstantExpression)right;
+                switch (expression.OperatorType)
+                {
+                    case TokenType.Plus:
+                        return new ConstantExpression(constLeft.Value + constRight.Value);
+                    case TokenType.Minus:
+                        return new ConstantExpression(constLeft.Value - constRight.Value);
+                    case TokenType.Mult:
+                        return new ConstantExpression(constLeft.Value * constRight.Value);
+                    case TokenType.Div:
+                        return new ConstantExpression(constLeft.Value / constRight.Value);
+                    default:
+                        Debug.Assert(expression.OperatorType == TokenType.Modulo);
+                        return new ConstantExpression(constLeft.Value % constRight.Value);
+                }
             }
-        }
 
-        public int Visit(TernaryExpression expression)
-        {
-            return expression.PredicateExpression.Accept(this) >= 0 ?
-                expression.TrueExpression.Accept(this) :
-                expression.FalseExpression.Accept(this);
-        }
-
-        public int Visit(VariableDeclarationExpression expression)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int Visit(ErrorExpression expression)
-        {
-            throw new InvalidOperationException(expression.Message);
+            return left != expression.LeftExpression || right != expression.RightExpression
+                ? new BinaryExpression(expression.OperatorType, left, right)
+                : expression;
         }
     }
 }

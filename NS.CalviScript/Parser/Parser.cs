@@ -19,13 +19,21 @@ namespace NS.CalviScript
         /// Parse a program as defined in the "program" rule in formal grammar.
         /// </summary>
         /// <returns>The program AST.</returns>
-        public IExpression ParseBlock()
+        public IExpression ParseProgram()
         {
-            IExpression result = Block();
-            Token token;
-            if (!_tokenizer.MatchToken(TokenType.End, out token))
-                return CreateErrorExpression("EOI");
-            return result;
+            List<IExpression> statements = new List<IExpression>();
+
+            while (!_tokenizer.MatchToken(TokenType.End))
+            {
+                var statement = Block(false) ?? Statement();
+                if (statement is ErrorExpression)
+                    return statement;
+                statements.Add(statement);
+            }
+
+            return statements.Count == 1 && statements[0] is BlockExpression
+                ? statements[0]
+                : new BlockExpression(statements);
         }
 
         /// <summary>
@@ -34,11 +42,11 @@ namespace NS.CalviScript
         /// </summary>
         /// <param name="input">A string input to give to the <see cref="Tokenizer"/>.</param>
         /// <returns>The program expression.</returns>
-        public static IExpression ParseBlock(string input)
+        public static IExpression ParseProgram(string input)
         {
             Tokenizer tokenizer = new Tokenizer(input);
             Parser parser = new Parser(tokenizer);
-            return parser.ParseBlock();
+            return parser.ParseProgram();
         }
 
         /// <summary>
@@ -69,33 +77,48 @@ namespace NS.CalviScript
         #endregion
 
         #region Grammar Methods
-        IExpression Block()
+        IExpression Block(bool expected)
         {
-            var statements = new List<IExpression>();
+            if (!_tokenizer.MatchToken(TokenType.OpenCurly))
+                return expected ? CreateErrorExpression("{") : null;
 
-            while (!_tokenizer.MatchToken(TokenType.End))
+            var statements = new List<IExpression>();
+            using (_syntaxicScope.OpenScope())
             {
-                statements.Add(Statement());
-                if (!_tokenizer.MatchToken(TokenType.SemiColon))
-                    return CreateErrorExpression(";");
-                _tokenizer.GetNextToken();
+                while (!_tokenizer.MatchToken(TokenType.CloseCurly))
+                {
+                    var statement = Block(false) ?? Statement();
+                    if (statement is ErrorExpression) return statement;
+                    statements.Add(statement);
+                }
             }
+
+            if (!_tokenizer.MatchToken(TokenType.OpenCurly))
+                return CreateErrorExpression("}");
 
             return new BlockExpression(statements);
         }
 
         IExpression Statement()
         {
-            if (_tokenizer.CurrentToken.Type == TokenType.Var)
-                return VariableDeclaration();
-            return Expression();
+            IExpression expression = VariableDeclaration()
+                ?? Expression();
+
+            if (expression == null)
+                return CreateErrorExpression("statement");
+
+            if (!_tokenizer.MatchToken(TokenType.SemiColon))
+                return CreateErrorExpression(";");
+
+            _tokenizer.GetNextToken();
+            return expression;
         }
 
         IExpression VariableDeclaration()
         {
             // If no "var", return error.
             if (!_tokenizer.MatchToken(TokenType.Var))
-                return CreateErrorExpression("var");
+                return null;
 
             Token token;
 
@@ -108,8 +131,12 @@ namespace NS.CalviScript
             IExpression variableDeclaration = _syntaxicScope.Declare(token.Value);
             if (variableDeclaration is ErrorExpression)
                 return variableDeclaration;
-            var _variableDeclaration = (VariableDeclarationExpression)variableDeclaration;
 
+            return Assign((VariableDeclarationExpression)variableDeclaration);
+        }
+
+        IExpression Assign(IIdentifierExpression _variableDeclaration)
+        {
             // If no "=", return error.
             _tokenizer.GetNextToken();
             if (!_tokenizer.MatchToken(TokenType.Equal))
@@ -117,12 +144,12 @@ namespace NS.CalviScript
 
             // Parse the expression.
             _tokenizer.GetNextToken();
-            IExpression result = ParseExpression();
+            IExpression result = Expression();
             if (result == null)
                 return CreateErrorExpression("expression");
 
             _tokenizer.GetNextToken();
-            return new VariableDeclarationExpression(token.Value);
+            return new VariableDeclarationExpression(_tokenizer.CurrentToken.Value);
         }
 
         IExpression Expression()
@@ -218,12 +245,12 @@ namespace NS.CalviScript
             }
             else if (_tokenizer.MatchToken(TokenType.Identifier, out token))
             {
-                result = _syntaxicScope.LookUp(token.Value);
-                //result = new LookUpExpression(token.Value, _syntaxicScope.Find(token.Value));
-                _tokenizer.GetNextToken();
+                result = Assign(_syntaxicScope.LookUp(token.Value));
             }
             else
-                return CreateUnexpectedErrorExpression();
+            {
+                result = CreateUnexpectedErrorExpression();
+            }
 
             return result;
         }

@@ -19,6 +19,8 @@
         Colon,
         Equal,
         SemiColon,
+        OpenCurly,
+        CloseCurly,
 
         Identifier,
         Var,

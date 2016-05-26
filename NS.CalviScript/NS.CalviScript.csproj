@@ -40,19 +40,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Parser\AssignExpression.cs" />
-    <Compile Include="Parser\BinaryExpression.cs" />
-    <Compile Include="Parser\ErrorExpression.cs" />
+    <Compile Include="Parser\Expressions\AssignExpression.cs" />
+    <Compile Include="Parser\Expressions\BinaryExpression.cs" />
+    <Compile Include="Parser\Expressions\UndefinedExpression.cs" />
+    <Compile Include="Parser\Expressions\ErrorExpression.cs" />
     <Compile Include="Parser\IExpression.cs" />
-    <Compile Include="Parser\ConstantExpression.cs" />
+    <Compile Include="Parser\Expressions\ConstantExpression.cs" />
     <Compile Include="Parser\IIdentifierExpression.cs" />
-    <Compile Include="Parser\LookUpExpression.cs" />
+    <Compile Include="Parser\Expressions\LookUpExpression.cs" />
     <Compile Include="Parser\Parser.cs" />
-    <Compile Include="Parser\BlockExpression.cs" />
+    <Compile Include="Parser\Expressions\BlockExpression.cs" />
     <Compile Include="Parser\SyntaxicScope.cs" />
-    <Compile Include="Parser\TernaryExpression.cs" />
-    <Compile Include="Parser\UnaryExpression.cs" />
-    <Compile Include="Parser\VariableDeclarationExpression.cs" />
+    <Compile Include="Parser\Expressions\TernaryExpression.cs" />
+    <Compile Include="Parser\Expressions\UnaryExpression.cs" />
+    <Compile Include="Parser\Expressions\VariableDeclarationExpression.cs" />
     <Compile Include="Tokenizer\Token.cs" />
     <Compile Include="Tokenizer\Tokenizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Visitors\InfixStringVisitor.cs" />
     <Compile Include="Visitors\IVisitor.cs" />
     <Compile Include="Visitors\LispyStringVisitor.cs" />
+    <Compile Include="Visitors\StandardVisitor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

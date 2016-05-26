@@ -17,6 +17,10 @@
         T Visit(VariableDeclarationExpression expression);
 
         T Visit(ErrorExpression expression);
+
+        T Visit(AssignExpression expression);
+
+        T Visit(UndefinedExpression expression);
     }
 
     public static class IVisitorExtentions

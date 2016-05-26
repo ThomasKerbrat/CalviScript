@@ -26,6 +26,16 @@ namespace NS.CalviScript
         public string Visit(LookUpExpression expression)
             => string.Format("[LU \"{0}\"]", expression.Identifier);
 
+        public string Visit(AssignExpression expression)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string Visit(UndefinedExpression expression)
+        {
+            throw new NotImplementedException();
+        }
+
         public string Visit(UnaryExpression expression)
             => string.Format("[{0} {1}]",
                 TokenTypeHelpers.TokenTypeToString(expression.OperatorType),

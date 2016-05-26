@@ -5,29 +5,53 @@ namespace NS.CalviScript
 {
     class SyntaxicScope
     {
-        Dictionary<string, VariableDeclarationExpression> _scope;
+        Stack<Dictionary<string, VariableDeclarationExpression>> _scopes;
 
-        public SyntaxicScope()
+        internal SyntaxicScope()
         {
-            _scope = new Dictionary<string, VariableDeclarationExpression>();
+            _scopes = new Stack<Dictionary<string, VariableDeclarationExpression>>();
+            _scopes.Push(new Dictionary<string, VariableDeclarationExpression>());
         }
 
         public IExpression Declare(string identifier)
         {
             VariableDeclarationExpression existing;
-            if (_scope.TryGetValue(identifier, out existing))
+            var currentScope = _scopes.Peek();
+
+            if (currentScope.TryGetValue(identifier, out existing))
                 return new ErrorExpression("Duplicate identifier declaration: " + identifier);
 
             existing = new VariableDeclarationExpression(identifier);
-            _scope.Add(identifier, existing);
+            currentScope.Add(identifier, existing);
             return existing;
         }
 
         public LookUpExpression LookUp(string identifier)
         {
-            VariableDeclarationExpression existing;
-            _scope.TryGetValue(identifier, out existing);
+            VariableDeclarationExpression existing = null;
+
+            foreach (var scope in _scopes)
+                if (scope.TryGetValue(identifier, out existing))
+                    break;
+
             return new LookUpExpression(identifier, existing);
+        }
+
+        public IDisposable OpenScope()
+            => new ScopeCloser(this);
+
+        class ScopeCloser : IDisposable
+        {
+            readonly SyntaxicScope _current;
+
+            public ScopeCloser(SyntaxicScope scope)
+            {
+                _current = scope;
+                _current._scopes.Push(new Dictionary<string, VariableDeclarationExpression>());
+            }
+
+            public void Dispose()
+                => _current._scopes.Pop();
         }
     }
 }

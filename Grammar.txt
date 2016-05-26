@@ -1,18 +1,13 @@
-block: (statement ';')* EOI
-	| '{' (statement ';')* '}' EOI
-statement: variableDeclaration
-	| assign
-	| expression
+program              -> (block | statement )* EOI
+block                -> '{' (block | statement)* '}'
+statement            -> (variableDeclaration | assign | expression) ';'
 
-assign: iidentifier '=' expression
-iidentifier: IDENTIFIER
-	| variableDeclaration
-variableDeclaration: 'var' IDENTIFIER
+assign               -> iidentifier '=' expression
+iidentifier          -> IDENTIFIER | variableDeclaration
+variableDeclaration  -> 'var' IDENTIFIER
 
-expression: mathExpression ('?' expression ':' expression)?
-mathExpression: term (('+' | '-') term)*
-term: factor (('*' | '/' | '%') factor)*
-factor: '-'? positiveFactor
-positiveFactor: NUMBER
-	| IDENTIFIER
-	| ('(' expression ')')
+expression           -> mathExpression ('?' expression ':' expression)?
+mathExpression       -> term (('+' | '-') term)*
+term                 -> factor (('*' | '/' | '%') factor)*
+factor               -> '-'? positiveFactor
+positiveFactor       -> NUMBER | IDENTIFIER | ('(' expression ')')

@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace NS.CalviScript.Tests
 {
@@ -41,11 +42,43 @@ namespace NS.CalviScript.Tests
         public void should_evaluate(string input, int expected)
         {
             IExpression expression = Parser.ParseExpression(input);
-            EvaluationVisitor visitor = new EvaluationVisitor();
+            var globalContext = new Dictionary<string, int>();
+            EvaluationVisitor visitor = new EvaluationVisitor(globalContext);
 
-            int result = visitor.Visit(expression);
+            IExpression result = visitor.Visit(expression);
 
-            Assert.That(result, Is.EqualTo(expected));
+            Assert.That(result, Is.InstanceOf<ConstantExpression>());
+            Assert.That(((ConstantExpression)result).Value, Is.EqualTo(expected));
+        }
+
+        /// <summary>
+        /// var x;
+        /// var a = 3;
+        /// var b = 1;
+        /// {
+        ///     var a = 7;
+        ///     x = a + b;
+        /// }
+        /// x;
+        /// => 8
+        /// </summary>
+        /// <param name="program"></param>
+        /// <param name="expected"></param>
+        [TestCase("x;", 3712)]
+        [TestCase("x + 10;", 3712 + 10)]
+        [TestCase("(x * x) + 10;", 3712 * 3712 + 10)]
+        [TestCase("var a = 3;", 3)]
+        public void should_access_to_the_context(string program, int expected)
+        {
+            IExpression expression = Parser.ParseProgram(program);
+            var globalContext = new Dictionary<string, int>();
+            globalContext.Add("x", 3712);
+            EvaluationVisitor visitor = new EvaluationVisitor(globalContext);
+
+            IExpression result = visitor.Visit(expression);
+
+            Assert.That(result, Is.InstanceOf<ConstantExpression>());
+            Assert.That(((ConstantExpression)result).Value, Is.EqualTo(expected));
         }
     }
 }
