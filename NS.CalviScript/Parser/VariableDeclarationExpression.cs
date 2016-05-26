@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace NS.CalviScript
 {
-    public class VariableDeclarationExpression : IExpression
+    public class VariableDeclarationExpression : IExpression, IIdentifierExpression
     {
-        public VariableDeclarationExpression(string identifier, IExpression expression)
+        public VariableDeclarationExpression(string identifier)
         {
             Identifier = identifier;
-            Expression = expression;
         }
 
         public string Identifier { get; }

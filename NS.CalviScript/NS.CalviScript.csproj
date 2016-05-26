@@ -40,13 +40,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Parser\AssignExpression.cs" />
     <Compile Include="Parser\BinaryExpression.cs" />
     <Compile Include="Parser\ErrorExpression.cs" />
     <Compile Include="Parser\IExpression.cs" />
     <Compile Include="Parser\ConstantExpression.cs" />
+    <Compile Include="Parser\IIdentifierExpression.cs" />
     <Compile Include="Parser\LookUpExpression.cs" />
     <Compile Include="Parser\Parser.cs" />
     <Compile Include="Parser\BlockExpression.cs" />
+    <Compile Include="Parser\SyntaxicScope.cs" />
     <Compile Include="Parser\TernaryExpression.cs" />
     <Compile Include="Parser\UnaryExpression.cs" />
     <Compile Include="Parser\VariableDeclarationExpression.cs" />

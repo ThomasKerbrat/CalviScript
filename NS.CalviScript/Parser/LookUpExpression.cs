@@ -1,13 +1,16 @@
 ﻿namespace NS.CalviScript
 {
-    public class LookUpExpression : IExpression
+    public class LookUpExpression : IExpression, IIdentifierExpression
     {
-        public LookUpExpression(string identifier)
+        public LookUpExpression(string identifier, VariableDeclarationExpression varriableDeclaration)
         {
             Identifier = identifier;
+            VariableDeclaration = varriableDeclaration;
         }
 
         public string Identifier { get; }
+
+        public VariableDeclarationExpression VariableDeclaration { get; }
 
         public T Accept<T>(IVisitor<T> visitor)
         {

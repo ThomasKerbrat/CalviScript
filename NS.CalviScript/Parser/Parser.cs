@@ -15,10 +15,12 @@ namespace NS.CalviScript
     public class Parser
     {
         readonly Tokenizer _tokenizer;
+        readonly SyntaxicScope _syntaxicScope;
 
         public Parser(Tokenizer tokenizer)
         {
             _tokenizer = tokenizer;
+            _syntaxicScope = new SyntaxicScope();
             _tokenizer.GetNextToken();
         }
 
@@ -101,21 +103,36 @@ namespace NS.CalviScript
 
         IExpression VariableDeclaration()
         {
+            // If no "var", return error.
             if (!_tokenizer.MatchToken(TokenType.Var))
                 return CreateErrorExpression("var");
 
             Token token;
 
+            // If no "identifier", return error.
             _tokenizer.GetNextToken();
             if (!_tokenizer.MatchToken(TokenType.Identifier, out token))
                 return CreateErrorExpression("identifier");
 
+            // Ask the syntaxic scope to handle the variable declaration.
+            IExpression variableDeclaration = _syntaxicScope.Declare(token.Value);
+            if (variableDeclaration is ErrorExpression)
+                return variableDeclaration;
+            var _variableDeclaration = (VariableDeclarationExpression)variableDeclaration;
+
+            // If no "=", return error.
             _tokenizer.GetNextToken();
             if (!_tokenizer.MatchToken(TokenType.Equal))
-                return CreateErrorExpression("=");
+                return _variableDeclaration;
+
+            // Parse the expression.
+            _tokenizer.GetNextToken();
+            IExpression result = ParseExpression();
+            if (result == null)
+                return CreateErrorExpression("expression");
 
             _tokenizer.GetNextToken();
-            return new VariableDeclarationExpression(token.Value, Expression());
+            return new VariableDeclarationExpression(token.Value);
         }
 
         IExpression Expression()
@@ -211,7 +228,8 @@ namespace NS.CalviScript
             }
             else if (_tokenizer.MatchToken(TokenType.Identifier, out token))
             {
-                result = new LookUpExpression(token.Value);
+                result = _syntaxicScope.LookUp(token.Value);
+                //result = new LookUpExpression(token.Value, _syntaxicScope.Find(token.Value));
                 _tokenizer.GetNextToken();
             }
             else
