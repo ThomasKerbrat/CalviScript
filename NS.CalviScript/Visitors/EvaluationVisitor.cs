@@ -69,5 +69,11 @@ namespace NS.CalviScript
                 ? new BinaryExpression(expression.OperatorType, left, right)
                 : expression;
         }
+
+        public override IExpression Visit(AssignExpression expression)
+        {
+            var result = expression.Expression.Accept(this);
+            return result;
+        }
     }
 }
