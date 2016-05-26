@@ -2,16 +2,6 @@
 
 namespace NS.CalviScript
 {
-    /// <summary>
-    /// program: (statement ';')* EOI
-    /// statement: variableDeclaration | expression
-    /// variableDeclaration: VAR IDENTIFIER '=' expression
-    /// expression: mathExpression ('?' expression ':' expression)?
-    /// mathExpression: term (('+' | '-') term)*
-    /// term: factor (('*' | '/' | '%') factor)*
-    /// factor: '-'? positiveFactor
-    /// positiveFactor: NUMBER | IDENTIFIER | ('(' expression ')')
-    /// </summary>
     public class Parser
     {
         readonly Tokenizer _tokenizer;
