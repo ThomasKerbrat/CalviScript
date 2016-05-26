@@ -52,10 +52,12 @@ namespace NS.CalviScript
 
         public virtual IExpression Visit(UnaryExpression expression)
         {
-            var _expression = expression.Expression.Accept(this);
-            return _expression != expression.Expression
-                ? new UnaryExpression(expression.OperatorType, _expression)
-                : expression;
+            var possibleContantExpression = expression.Expression.Accept(this);
+
+            if (possibleContantExpression is ConstantExpression)
+                return new ConstantExpression(((ConstantExpression)possibleContantExpression).Value * -1);
+
+            return possibleContantExpression;
         }
 
         public virtual IExpression Visit(ConstantExpression expression)
