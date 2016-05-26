@@ -29,14 +29,12 @@ namespace NS.CalviScript
             => expression.Identifier;
 
         public string Visit(AssignExpression expression)
-        {
-            throw new NotImplementedException();
-        }
+            => string.Format("{0} = {1}",
+                expression.Identifier.Accept(this),
+                expression.Expression.Accept(this));
 
         public string Visit(UndefinedExpression expression)
-        {
-            throw new NotImplementedException();
-        }
+            => "undefined";
 
         public string Visit(UnaryExpression expression)
             => string.Format("{0}{1}",

@@ -53,5 +53,11 @@ namespace NS.CalviScript.Tests.Visitors
         [TestCase("-99 ? 9 : -99", "[? [- 99] 9 [- 99]]")]
         public void should_visit_ternary_ast(string input, string expected)
             => boilerplate(input, expected);
+
+        [TestCase("a = 1", @"[= [LU ""a""] 1]")]
+        [TestCase("a = 1 + 1", @"[= [LU ""a""] [+ 1 1]]")]
+        [TestCase("a = b + -9", @"[= [LU ""a""] [+ [LU ""b""] [- 9]]]")]
+        public void should_visit_assignation_ast(string input, string expected)
+            => boilerplate(input, expected);
     }
 }
