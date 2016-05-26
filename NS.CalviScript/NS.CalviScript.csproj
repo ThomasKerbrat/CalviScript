@@ -46,7 +46,7 @@
     <Compile Include="Parser\ConstantExpression.cs" />
     <Compile Include="Parser\LookUpExpression.cs" />
     <Compile Include="Parser\Parser.cs" />
-    <Compile Include="Parser\ProgramExpression.cs" />
+    <Compile Include="Parser\BlockExpression.cs" />
     <Compile Include="Parser\TernaryExpression.cs" />
     <Compile Include="Parser\UnaryExpression.cs" />
     <Compile Include="Parser\VariableDeclarationExpression.cs" />

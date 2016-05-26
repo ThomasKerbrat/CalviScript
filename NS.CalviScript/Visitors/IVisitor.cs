@@ -2,7 +2,7 @@
 {
     public interface IVisitor<T>
     {
-        T Visit(ProgramExpression expression);
+        T Visit(BlockExpression expression);
 
         T Visit(ConstantExpression expression);
 

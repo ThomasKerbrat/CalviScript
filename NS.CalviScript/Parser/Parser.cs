@@ -89,7 +89,7 @@ namespace NS.CalviScript
                 _tokenizer.GetNextToken();
             }
 
-            return new ProgramExpression(statements);
+            return new BlockExpression(statements);
         }
 
         IExpression Statement()

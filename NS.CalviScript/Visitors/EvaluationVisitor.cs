@@ -4,7 +4,7 @@ namespace NS.CalviScript
 {
     public class EvaluationVisitor : IVisitor<int>
     {
-        public int Visit(ProgramExpression expression)
+        public int Visit(BlockExpression expression)
         {
             throw new NotImplementedException();
         }

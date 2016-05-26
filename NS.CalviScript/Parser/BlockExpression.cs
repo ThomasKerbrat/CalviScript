@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace NS.CalviScript
 {
-    public class ProgramExpression : IExpression
+    public class BlockExpression : IExpression
     {
-        public ProgramExpression(IReadOnlyList<IExpression> statements)
+        public BlockExpression(IReadOnlyList<IExpression> statements)
         {
             Statements = statements;
         }

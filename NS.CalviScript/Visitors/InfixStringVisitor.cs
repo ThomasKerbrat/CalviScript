@@ -5,7 +5,7 @@ namespace NS.CalviScript
 {
     public class InfixStringVisitor : IVisitor<string>
     {
-        public string Visit(ProgramExpression expression)
+        public string Visit(BlockExpression expression)
         {
             var sb = new StringBuilder();
 

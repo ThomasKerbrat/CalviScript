@@ -5,7 +5,7 @@ namespace NS.CalviScript
 {
     public class LispyStringVisitor : IVisitor<string>
     {
-        public string Visit(ProgramExpression expression)
+        public string Visit(BlockExpression expression)
         {
             var sb = new StringBuilder();
             sb.Append("[S");
