@@ -109,8 +109,7 @@ namespace NS.CalviScript
 
             if (!_tokenizer.MatchToken(TokenType.SemiColon))
                 return CreateErrorExpression(";");
-
-            _tokenizer.GetNextToken();
+            
             return expression;
         }
 
@@ -123,7 +122,6 @@ namespace NS.CalviScript
             Token token;
 
             // If no "identifier", return error.
-            _tokenizer.GetNextToken();
             if (!_tokenizer.MatchToken(TokenType.Identifier, out token))
                 return CreateErrorExpression("identifier");
 
@@ -135,21 +133,18 @@ namespace NS.CalviScript
             return Assign((VariableDeclarationExpression)variableDeclaration);
         }
 
-        IExpression Assign(IIdentifierExpression _variableDeclaration)
+        IExpression Assign(IIdentifierExpression identifier)
         {
             // If no "=", return error.
-            _tokenizer.GetNextToken();
             if (!_tokenizer.MatchToken(TokenType.Equal))
-                return _variableDeclaration;
+                return identifier;
 
             // Parse the expression.
-            _tokenizer.GetNextToken();
-            IExpression result = Expression();
-            if (result == null)
+            IExpression expression = Expression();
+            if (expression == null)
                 return CreateErrorExpression("expression");
-
-            _tokenizer.GetNextToken();
-            return new VariableDeclarationExpression(_tokenizer.CurrentToken.Value);
+            
+            return new AssignExpression(identifier, expression);
         }
 
         IExpression Expression()
@@ -158,11 +153,9 @@ namespace NS.CalviScript
 
             if (_tokenizer.MatchToken(TokenType.QuestionMark))
             {
-                _tokenizer.GetNextToken();
                 IExpression trueExpression = Expression();
                 if (_tokenizer.MatchToken(TokenType.Colon))
                 {
-                    _tokenizer.GetNextToken();
                     IExpression falseExpresion = Expression();
                     expression = new TernaryExpression(expression, trueExpression, falseExpresion);
                 }
@@ -179,13 +172,11 @@ namespace NS.CalviScript
         {
             IExpression left = Term();
 
-            Token token = _tokenizer.CurrentToken;
-            while (_tokenizer.MatchTermOperator(out token))
+            Token operatorToken = _tokenizer.CurrentToken;
+            while (_tokenizer.MatchTermOperator(out operatorToken))
             {
-                _tokenizer.GetNextToken();
                 IExpression right = Term();
-                left = new BinaryExpression(token.Type, left, right);
-                token = _tokenizer.CurrentToken;
+                left = new BinaryExpression(operatorToken.Type, left, right);
             }
 
             return left;
@@ -195,13 +186,11 @@ namespace NS.CalviScript
         {
             IExpression left = Factor();
 
-            Token token = _tokenizer.CurrentToken;
-            while (_tokenizer.MatchFactorOperator(out token))
+            Token operatorToken = _tokenizer.CurrentToken;
+            while (_tokenizer.MatchFactorOperator(out operatorToken))
             {
-                _tokenizer.GetNextToken();
                 IExpression right = Factor();
-                left = new BinaryExpression(token.Type, left, right);
-                token = _tokenizer.CurrentToken;
+                left = new BinaryExpression(operatorToken.Type, left, right);
             }
 
             return left;
@@ -214,7 +203,6 @@ namespace NS.CalviScript
 
             if (isMinusExpression)
             {
-                _tokenizer.GetNextToken();
                 expression = new UnaryExpression(TokenType.Minus, PositiveFactor());
             }
             else
@@ -232,16 +220,13 @@ namespace NS.CalviScript
 
             if (_tokenizer.MatchNumber(out token))
             {
-                result = new ConstantExpression(int.Parse(_tokenizer.CurrentToken.Value));
-                _tokenizer.GetNextToken();
+                result = new ConstantExpression(int.Parse(token.Value));
             }
             else if (_tokenizer.MatchToken(TokenType.LeftParenthesis))
             {
-                _tokenizer.GetNextToken();
                 result = Expression();
                 if (!_tokenizer.MatchToken(TokenType.RightParenthesis))
                     result = CreateErrorExpression(")");
-                _tokenizer.GetNextToken();
             }
             else if (_tokenizer.MatchToken(TokenType.Identifier, out token))
             {

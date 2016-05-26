@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Visitors\EvaluationVisitorTests.cs" />
     <Compile Include="Visitors\InfixStringVisitorTests.cs" />
     <Compile Include="Visitors\LispyStringVisitorTests.cs" />
     <Compile Include="VisitorTests.cs" />

@@ -134,12 +134,27 @@ namespace NS.CalviScript
         #endregion
 
         #region Parser Helpers
+        /// <summary>
+        /// Match the <see cref="CurrentToken"/> type to <see cref="TokenType.Number"/>.
+        /// </summary>
+        /// <param name="token">Variable that will be assigned during the match.</param>
+        /// <returns>Returns if the <see cref="CurrentToken"/> type has matched with a <see cref="TokenType.Number"/>.</returns>
         public bool MatchNumber(out Token token)
             => MatchToken(TokenType.Number, out token);
 
+        /// <summary>
+        /// Match the <see cref="CurrentToken"/> type to one of the two possible term operators: "+" and "-".
+        /// </summary>
+        /// <param name="token">Variable that will be assigned during the match.</param>
+        /// <returns>Returns if the <see cref="CurrentToken"/> type has matched with one of the two possible term operators.</returns>
         public bool MatchTermOperator(out Token token)
             => MatchToken(type => type == TokenType.Plus || type == TokenType.Minus, out token);
 
+        /// <summary>
+        /// Match the <see cref="CurrentToken"/> type to one of the three possible factor operators: "*", "/" and "%".
+        /// </summary>
+        /// <param name="token">Variable that will be assigned during the match.</param>
+        /// <returns>Returns if the <see cref="CurrentToken"/> type has matched with one of the three possible factor operators.</returns>
         public bool MatchFactorOperator(out Token token)
             => MatchToken(type => type == TokenType.Mult || type == TokenType.Div || type == TokenType.Modulo, out token);
 
@@ -148,11 +163,8 @@ namespace NS.CalviScript
         /// </summary>
         /// <param name="type">Type to match against.</param>
         /// <returns>Returns if the <see cref="CurrentToken"/> type has matched with the provided Token type.</returns>
-        public bool MatchToken(TokenType type)
-        {
-            Token token;
-            return MatchToken(type, out token);
-        }
+        public bool MatchToken(TokenType type, Token token = null)
+            => MatchToken(type, out token);
 
         /// <summary>
         /// Match the <see cref="CurrentToken"/> type to any <see cref="TokenType"/> provided.
@@ -174,6 +186,7 @@ namespace NS.CalviScript
             if (predicate(CurrentToken.Type))
             {
                 token = CurrentToken;
+                GetNextToken();
                 return true;
             }
 
