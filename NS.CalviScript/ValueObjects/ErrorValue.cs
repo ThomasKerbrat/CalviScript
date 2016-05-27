@@ -1,4 +1,6 @@
-﻿namespace NS.CalviScript
+﻿using System;
+
+namespace NS.CalviScript
 {
     public class ErrorValue : BaseValue
     {
@@ -8,6 +10,14 @@
         }
 
         public string Message { get; }
+
+        public override bool IsTrue
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public override string ToString()
             => "Error: " + Message;

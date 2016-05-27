@@ -1,4 +1,6 @@
-﻿namespace NS.CalviScript
+﻿using System;
+
+namespace NS.CalviScript
 {
     public class IntegerValue : BaseValue
     {
@@ -27,6 +29,9 @@
         }
 
         public int Value { get; }
+
+        public override bool IsTrue
+            => Value >= 0;
 
         public override string ToString()
             => Value.ToString();

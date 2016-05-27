@@ -1,6 +1,7 @@
 ﻿namespace NS.CalviScript
 {
-    public class BaseValue // : IComparable<BaseValue>
+    public abstract class BaseValue // : IComparable<BaseValue>
     {
+        public abstract bool IsTrue { get; }
     }
 }
