@@ -119,6 +119,7 @@ namespace NS.CalviScript
 
             string identifier = sb.ToString();
             if (identifier == "var") return new Token(TokenType.Var, identifier);
+            if (identifier == "while") return new Token(TokenType.While, identifier);
             else return new Token(TokenType.Identifier, identifier);
         }
         #endregion

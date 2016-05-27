@@ -24,6 +24,7 @@
 
         Identifier,
         Var,
+        While,
 
         End
     }
