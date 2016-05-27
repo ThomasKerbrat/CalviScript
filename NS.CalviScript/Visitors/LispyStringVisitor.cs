@@ -57,5 +57,8 @@ namespace NS.CalviScript
 
         public string Visit(ErrorExpression expression)
             => string.Format("[Error {0}]", expression.Message);
+
+        public string Visit(WhileExpression expression)
+            => "while";
     }
 }

@@ -90,5 +90,10 @@ namespace NS.CalviScript
                 ? new BlockExpression(newBlock)
                 : expression;
         }
+
+        public IExpression Visit(WhileExpression expression)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

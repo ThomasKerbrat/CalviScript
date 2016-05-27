@@ -21,6 +21,8 @@
         T Visit(AssignExpression expression);
 
         T Visit(UndefinedExpression expression);
+
+        T Visit(WhileExpression expression);
     }
 
     public static class IVisitorExtentions

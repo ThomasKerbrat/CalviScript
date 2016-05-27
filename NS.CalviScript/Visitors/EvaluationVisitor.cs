@@ -128,5 +128,17 @@ namespace NS.CalviScript
         {
             return IntegerValue.Create(expression.Value);
         }
+
+        public BaseValue Visit(WhileExpression expression)
+        {
+            BaseValue result = UndefinedValue.Default;
+
+            while (expression.Condition.Accept(this).IsTrue)
+            {
+                result = expression.Body.Accept(this);
+            }
+
+            return result;
+        }
     }
 }

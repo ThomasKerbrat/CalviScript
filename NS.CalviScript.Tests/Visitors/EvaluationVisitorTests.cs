@@ -10,23 +10,12 @@ namespace NS.CalviScript.Tests.Visitors
     [TestFixture]
     public class EvaluationVisitorTests
     {
-        /// <summary>
-        /// var x;
-        /// var a = 3;
-        /// var b = 1;
-        /// {
-        ///     var a = 7;
-        ///     x = a + b;
-        /// }
-        /// x;
-        /// => 8
-        /// </summary>
-        /// <param name="program"></param>
-        /// <param name="expected"></param>
         [TestCase("x;", 3712)]
         [TestCase("x + 10;", 3712 + 10)]
         [TestCase("(x * x) + 10;", 3712 * 3712 + 10)]
         [TestCase("var a = 3;", 3)]
+        [TestCase("var a = 3; var collector = 0; while (a) { a = a - 1; collector = collector + 10; }", 40)]
+        [TestCase("var a = 3; var collector = 0; while (a) { a = a - 1; collector = collector + 10; } collector;", 40)]
         public void should_access_to_the_context(string program, int expected)
         {
             IExpression expression = Parser.ParseProgram(program);
