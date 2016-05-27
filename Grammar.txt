@@ -1,6 +1,6 @@
 program              -> (block | statement )* EOI
 block                -> '{' (block | statement)* '}'
-statement            -> (variableDeclaration | assign | while | expression) ';'
+statement            -> (variableDeclaration | assign | while | expression) ';'?
 
 assign               -> iidentifier '=' expression
 iidentifier          -> IDENTIFIER | variableDeclaration
