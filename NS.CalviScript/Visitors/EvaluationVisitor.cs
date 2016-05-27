@@ -1,20 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace NS.CalviScript
 {
-    public class EvaluationVisitor : StandardVisitor
+    public class EvaluationVisitor : IVisitor<BaseValue>
     {
-        private Dictionary<string, int> _globalContext;
+        private Dictionary<string, BaseValue> _globalContext;
+        private Dictionary<VariableDeclarationExpression, BaseValue> _variables;
 
-        public EvaluationVisitor(Dictionary<string, int> globalContext)
+        public EvaluationVisitor(Dictionary<string, BaseValue> globalContext)
         {
             _globalContext = globalContext;
+            _variables = new Dictionary<VariableDeclarationExpression, BaseValue>();
         }
 
-        public override IExpression Visit(BlockExpression expression)
+        public BaseValue Visit(BlockExpression expression)
         {
-            IExpression last = UndefinedExpression.Default;
+            BaseValue last = UndefinedValue.Default;
             foreach (var statement in expression.Statements)
             {
                 last = statement.Accept(this);
@@ -22,86 +25,108 @@ namespace NS.CalviScript
             return last;
         }
 
-        public override IExpression Visit(LookUpExpression expression)
+        public BaseValue Visit(LookUpExpression expression)
         {
-            int value;
-            if (_globalContext.TryGetValue(expression.Identifier, out value))
+            if (expression.VariableDeclaration != null)
             {
-                return new ConstantExpression(value);
+                return _variables[expression.VariableDeclaration];
             }
             else
             {
-                return new ErrorExpression("Reference not found: " + expression.Identifier);
+                BaseValue value;
+                if (_globalContext.TryGetValue(expression.Identifier, out value))
+                {
+                    return value;
+                }
+                return new ErrorValue("Reference not found: " + expression.Identifier);
             }
+
         }
 
-        public override IExpression Visit(BinaryExpression expression)
+        public BaseValue Visit(UnaryExpression expression)
         {
-            IExpression left = expression.LeftExpression.Accept(this);
-            IExpression right = expression.RightExpression.Accept(this);
+            var result = expression.Expression.Accept(this);
+            if (!(result is IntegerValue))
+                return UndefinedValue.Default;
+            var value = (IntegerValue)result;
+            return IntegerValue.Create(-value.Value);
+        }
 
-            if (left is UndefinedExpression)
-                return left;
-            if (right is UndefinedExpression)
-                return right;
+        public BaseValue Visit(BinaryExpression expression)
+        {
+            var left = expression.LeftExpression.Accept(this);
+            var right = expression.RightExpression.Accept(this);
 
-            if (left is ConstantExpression && right is ConstantExpression)
+            if (left is IntegerValue && right is IntegerValue)
             {
-                var constLeft = (ConstantExpression)left;
-                var constRight = (ConstantExpression)right;
+                var constLeft = (IntegerValue)left;
+                var constRight = (IntegerValue)right;
                 switch (expression.OperatorType)
                 {
                     case TokenType.Plus:
-                        return new ConstantExpression(constLeft.Value + constRight.Value);
+                        return IntegerValue.Create(constLeft.Value + constRight.Value);
                     case TokenType.Minus:
-                        return new ConstantExpression(constLeft.Value - constRight.Value);
+                        return IntegerValue.Create(constLeft.Value - constRight.Value);
                     case TokenType.Mult:
-                        return new ConstantExpression(constLeft.Value * constRight.Value);
+                        return IntegerValue.Create(constLeft.Value * constRight.Value);
                     case TokenType.Div:
-                        return new ConstantExpression(constLeft.Value / constRight.Value);
+                        return IntegerValue.Create(constLeft.Value / constRight.Value);
                     default:
                         Debug.Assert(expression.OperatorType == TokenType.Modulo);
-                        return new ConstantExpression(constLeft.Value % constRight.Value);
+                        return IntegerValue.Create(constLeft.Value % constRight.Value);
                 }
             }
 
-            return left != expression.LeftExpression || right != expression.RightExpression
-                ? new BinaryExpression(expression.OperatorType, left, right)
-                : expression;
+            return UndefinedValue.Default;
         }
 
-        public override IExpression Visit(TernaryExpression expression)
+        public BaseValue Visit(TernaryExpression expression)
         {
-            var predicate = expression.PredicateExpression.Accept(this);
-            var @true = expression.TrueExpression.Accept(this);
-            var @false = expression.FalseExpression.Accept(this);
-
-            if (predicate is UndefinedExpression)
-                return predicate;
-            if (@true is UndefinedExpression)
-                return @true;
-            if (@false is UndefinedExpression)
-                return @false;
-
-            if (predicate is ConstantExpression && @true is ConstantExpression && @false is ConstantExpression)
+            var result = expression.PredicateExpression.Accept(this);
+            var value = result as IntegerValue;
+            if (value != null)
             {
-                var constPredicate = (ConstantExpression)predicate;
-                var constTrue = (ConstantExpression)@true;
-                var constFalse = (ConstantExpression)@false;
-                return constPredicate.Value >= 0
-                    ? @true
-                    : @false;
+                return value.Value >= 0
+                    ? expression.TrueExpression.Accept(this)
+                    : expression.FalseExpression.Accept(this);
             }
-
-            return predicate != expression.PredicateExpression || @true != expression.TrueExpression || @false != expression.FalseExpression
-                ? new TernaryExpression(predicate, @true, @false)
-                : expression;
+            return UndefinedValue.Default;
         }
 
-        public override IExpression Visit(AssignExpression expression)
+        public BaseValue Visit(VariableDeclarationExpression expression)
+        {
+            _variables.Add(expression, UndefinedValue.Default);
+            return UndefinedValue.Default;
+        }
+
+        public BaseValue Visit(AssignExpression expression)
         {
             var result = expression.Expression.Accept(this);
-            return result;
+            if (expression.Identifier.VariableDeclaration != null)
+            {
+                return _variables[expression.Identifier.VariableDeclaration] = result;
+            }
+            else
+            {
+                // if (strictMode)
+                // return new ErrorValue("Global assignation is disabled in strict mode.");
+                return _globalContext[expression.Identifier.Identifier] = result;
+            }
+        }
+
+        public BaseValue Visit(UndefinedExpression expression)
+        {
+            throw new NotImplementedException();
+        }
+
+        public BaseValue Visit(ErrorExpression expression)
+        {
+            return new ErrorValue(expression.Message);
+        }
+
+        public BaseValue Visit(ConstantExpression expression)
+        {
+            return IntegerValue.Create(expression.Value);
         }
     }
 }

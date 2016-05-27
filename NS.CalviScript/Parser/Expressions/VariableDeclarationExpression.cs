@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NS.CalviScript
 {
@@ -14,6 +10,9 @@ namespace NS.CalviScript
         }
 
         public string Identifier { get; }
+
+        VariableDeclarationExpression IIdentifierExpression.VariableDeclaration
+            => this;
 
         public T Accept<T>(IVisitor<T> visitor)
         {

@@ -42,13 +42,31 @@ namespace NS.CalviScript.Tests
         public void should_evaluate(string input, int expected)
         {
             IExpression expression = Parser.ParseExpression(input);
-            var globalContext = new Dictionary<string, int>();
+            var globalContext = new Dictionary<string, BaseValue>();
             EvaluationVisitor visitor = new EvaluationVisitor(globalContext);
 
-            IExpression result = visitor.Visit(expression);
+            var result = visitor.Visit(expression);
 
-            Assert.That(result, Is.InstanceOf<ConstantExpression>());
-            Assert.That(((ConstantExpression)result).Value, Is.EqualTo(expected));
+            Assert.That(result, Is.InstanceOf<IntegerValue>());
+            Assert.That(((IntegerValue)result).Value, Is.EqualTo(expected));
+        }
+
+        [TestCase("x;", 3712)]
+        [TestCase("x + 10;", 3712 + 10)]
+        [TestCase("(x * x) + 10;", 3712 * 3712 + 10)]
+        [TestCase("var a = 3;", 3)]
+        [TestCase("var x; var a = 3; var b = 1; { var a = 7; x = a + b; } x;", 8)]
+        public void should_access_to_the_context(string program, int expected)
+        {
+            IExpression expression = Parser.ParseProgram(program);
+            var globalContext = new Dictionary<string, BaseValue>();
+            globalContext.Add("x", IntegerValue.Create(3712));
+            EvaluationVisitor visitor = new EvaluationVisitor(globalContext);
+
+            var result = visitor.Visit(expression);
+
+            Assert.That(result, Is.InstanceOf<IntegerValue>());
+            Assert.That(((IntegerValue)result).Value, Is.EqualTo(expected));
         }
     }
 }
