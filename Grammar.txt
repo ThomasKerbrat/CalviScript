@@ -1,13 +1,18 @@
 program              -> (block | statement )* EOI
 block                -> '{' (block | statement)* '}'
-statement            -> (variableDeclaration | assign | expression) ';'
+statement            -> (variableDeclaration | assign | while | expression) ';'
 
 assign               -> iidentifier '=' expression
 iidentifier          -> IDENTIFIER | variableDeclaration
 variableDeclaration  -> 'var' IDENTIFIER
 
-expression           -> mathExpression ('?' expression ':' expression)?
+expression           -> functionDeclaration | (mathExpression ('?' expression ':' expression)?)
 mathExpression       -> term (('+' | '-') term)*
 term                 -> factor (('*' | '/' | '%') factor)*
 factor               -> '-'? positiveFactor
-positiveFactor       -> NUMBER | IDENTIFIER | ('(' expression ')')
+positiveFactor       -> NUMBER | functionCall | IDENTIFIER | ('(' expression ')')
+
+functionCall         -> IDENTIFIER '(' (expression (',' expression)*)? ')'
+functionDeclaration  -> 'function' '(' (IDENTIFIER (',' IDENTIFIER)*)? ')' block
+
+while                -> 'while' '(' expression ')' block
