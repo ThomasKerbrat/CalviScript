@@ -99,14 +99,16 @@ namespace NS.CalviScript
         IExpression Statement()
         {
             IExpression expression = VariableDeclaration()
+                ?? While(false)
                 ?? Expression();
 
             if (expression == null)
                 return CreateErrorExpression("statement");
 
-            if (!_tokenizer.MatchToken(TokenType.SemiColon))
-                return CreateErrorExpression(";");
-            
+            _tokenizer.MatchToken(TokenType.SemiColon);
+            //if (!_tokenizer.MatchToken(TokenType.SemiColon))
+            //    return CreateErrorExpression(";");
+
             return expression;
         }
 
@@ -235,6 +237,33 @@ namespace NS.CalviScript
             }
 
             return result;
+        }
+
+        IExpression While(bool expected)
+        {
+            if (!_tokenizer.MatchToken(TokenType.While))
+            {
+                return expected
+                    ? CreateErrorExpression("while")
+                    : null;
+            }
+
+            if (!_tokenizer.MatchToken(TokenType.LeftParenthesis))
+            {
+                return CreateErrorExpression("(");
+            }
+
+            var condition = Expression();
+            if (!_tokenizer.MatchToken(TokenType.RightParenthesis))
+            {
+                return CreateErrorExpression(")");
+            }
+
+            var body = Block(true);
+            if (body == null || body is ErrorExpression)
+                return body;
+
+            return new WhileExpression(condition, (BlockExpression)body);
         }
         #endregion
 
