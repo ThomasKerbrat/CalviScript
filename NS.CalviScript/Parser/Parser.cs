@@ -93,9 +93,6 @@ namespace NS.CalviScript
                 }
             }
 
-            if (!_tokenizer.MatchToken(TokenType.OpenCurly))
-                return CreateErrorExpression("}");
-
             return new BlockExpression(statements);
         }
 
