@@ -1,5 +1,8 @@
 ﻿namespace NS.CalviScript
 {
+    /// <summary>
+    /// This class should be named "LiteralExpression".
+    /// </summary>
     public class ConstantExpression : IExpression
     {
         public ConstantExpression(int value)

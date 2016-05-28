@@ -116,7 +116,7 @@ namespace NS.CalviScript
 
         public BaseValue Visit(UndefinedExpression expression)
         {
-            throw new NotImplementedException();
+            return UndefinedValue.Default;
         }
 
         public BaseValue Visit(ErrorExpression expression)

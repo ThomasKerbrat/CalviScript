@@ -40,7 +40,7 @@ namespace NS.CalviScript
                 expression.Expression.Accept(this));
 
         public string Visit(BinaryExpression expression)
-            => string.Format("[{0} {1} {2}]", 
+            => string.Format("[{0} {1} {2}]",
                 TokenTypeHelpers.TokenTypeToString(expression.OperatorType),
                 expression.LeftExpression.Accept(this),
                 expression.RightExpression.Accept(this));
@@ -56,9 +56,12 @@ namespace NS.CalviScript
                 expression.Identifier);
 
         public string Visit(ErrorExpression expression)
-            => string.Format("[Error {0}]", expression.Message);
+            => string.Format("[Error {0}]",
+                expression.Message);
 
         public string Visit(WhileExpression expression)
-            => "while";
+            => string.Format("[while {0} {1}]",
+                expression.Condition.Accept(this),
+                expression.Body.Accept(this));
     }
 }

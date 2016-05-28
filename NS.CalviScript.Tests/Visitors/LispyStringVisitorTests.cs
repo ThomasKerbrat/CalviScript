@@ -14,6 +14,7 @@ namespace NS.CalviScript.Tests.Visitors
 
             Assert.That(result, Is.EqualTo(expected));
         }
+
         void programBoilerplate(string input, string expected)
         {
             var visitor = new LispyStringVisitor();
@@ -26,8 +27,6 @@ namespace NS.CalviScript.Tests.Visitors
 
         [TestCase("", "[S]")]
         [TestCase("1;", "[S 1]")]
-        [TestCase("1 + 1;", "[S [+ 1 1]]")]
-        [TestCase("var test = 1 + 1;", @"[S [= [VD ""test""] [+ 1 1]]]")]
         [TestCase("var test = 1 + 1; var test2 = test - 8;", @"[S [= [VD ""test""] [+ 1 1]] [= [VD ""test2""] [- [LU ""test""] 8]]]")]
         public void should_visit_program_ast(string input, string expected)
             => programBoilerplate(input, expected);
