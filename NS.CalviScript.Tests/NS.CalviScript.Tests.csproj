@@ -53,7 +53,6 @@
     <Compile Include="Visitors\EvaluationVisitorTests.cs" />
     <Compile Include="Visitors\InfixStringVisitorTests.cs" />
     <Compile Include="Visitors\LispyStringVisitorTests.cs" />
-    <Compile Include="VisitorTests.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="TokenizerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
