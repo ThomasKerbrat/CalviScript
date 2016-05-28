@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace NS.CalviScript
 {
@@ -8,17 +7,19 @@ namespace NS.CalviScript
         public string Visit(BlockExpression expression)
         {
             var sb = new StringBuilder();
+            sb.Append("{");
 
-            var enumerator = expression.Statements.GetEnumerator();
-            enumerator.MoveNext();
-            while (enumerator.Current != null)
+            foreach (var statement in expression.Statements)
             {
-                sb.Append(enumerator.Current.Accept(this));
+                sb.Append(" ");
+                sb.Append(statement.Accept(this));
                 sb.Append(";");
-                if (enumerator.MoveNext())
-                    sb.Append(" ");
             }
 
+            if (sb.Length > 1)
+                sb.Append(" ");
+
+            sb.Append("}");
             return sb.ToString();
         }
 
@@ -61,6 +62,8 @@ namespace NS.CalviScript
             => string.Format("[Error {0}]", expression.Message);
 
         public string Visit(WhileExpression expression)
-            => "[while]";
+            => string.Format("while ({0}) {1}",
+                expression.Condition.Accept(this),
+                expression.Body.Accept(this));
     }
 }

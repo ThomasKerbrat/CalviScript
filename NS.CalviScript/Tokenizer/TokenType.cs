@@ -25,6 +25,7 @@
         Identifier,
         Var,
         While,
+        Function,
 
         End
     }

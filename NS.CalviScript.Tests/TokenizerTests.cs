@@ -16,6 +16,8 @@ namespace NS.CalviScript.Tests
         [TestCase(")", TokenType.RightParenthesis)]
         [TestCase("?", TokenType.QuestionMark)]
         [TestCase(":", TokenType.Colon)]
+        [TestCase("{", TokenType.OpenCurly)]
+        [TestCase("}", TokenType.CloseCurly)]
         public void should_parse_string_containing_one_char(string input, TokenType expected)
         {
             Tokenizer tokenizer = new Tokenizer(input);
@@ -142,6 +144,19 @@ namespace NS.CalviScript.Tests
         [TestCase("1name", TokenType.Error, "1n")]
         [TestCase("123name", TokenType.Error, "123n")]
         public void should_not_match_numbers(string input, TokenType expectedType, string expectedValue)
+        {
+            var tokenizer = new Tokenizer(input);
+
+            tokenizer.GetNextToken();
+
+            Assert.That(tokenizer.CurrentToken.Type, Is.EqualTo(expectedType));
+            Assert.That(tokenizer.CurrentToken.Value, Is.EqualTo(expectedValue));
+        }
+
+        [TestCase("var", TokenType.Var, "var")]
+        [TestCase("while", TokenType.While, "while")]
+        [TestCase("function", TokenType.Function, "function")]
+        public void should_parse_special_identifiers(string input, TokenType expectedType, string expectedValue)
         {
             var tokenizer = new Tokenizer(input);
 

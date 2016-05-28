@@ -60,6 +60,7 @@ namespace NS.CalviScript.Tests
             Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
         }
 
+        [TestCase("1", "[S 1]")]
         [TestCase("1 + 1", "[S [+ 1 1]]")]
         [TestCase("var a = 1 \r\n var b = 2 \r\n a + b", @"[S [= [VD ""a""] 1] [= [VD ""b""] 2] [+ [LU ""a""] [LU ""b""]]]")]
         public void should_parse_program_with_no_semicolons(string input, string expected)

@@ -66,5 +66,10 @@ namespace NS.CalviScript.Tests.Visitors
         [TestCase("var a = b + -9;", @"[S [= [VD ""a""] [+ [LU ""b""] [- 9]]]]")]
         public void should_visit_variableDeclaration_ast(string input, string expected)
             => programBoilerplate(input, expected);
+
+        [TestCase("while (0) { 1 }", "[S [while 0 [S 1]]]")]
+        [TestCase("var a = 3 while (a) { a = a - 1 }", @"[S [= [VD ""a""] 3] [while [LU ""a""] [S [= [LU ""a""] [- [LU ""a""] 1]]]]]")]
+        public void should_visit_while_ast(string input, string expected)
+            => programBoilerplate(input, expected);
     }
 }
