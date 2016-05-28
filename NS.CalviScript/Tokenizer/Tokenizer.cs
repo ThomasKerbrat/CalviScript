@@ -61,6 +61,9 @@ namespace NS.CalviScript
         }
 
         #region Handle Methods
+        /// <summary>
+        /// Moves forward until a non-whitespace char is found.
+        /// </summary>
         void HandleWhiteSpace()
         {
             Debug.Assert(IsWhiteSpace);
@@ -70,6 +73,9 @@ namespace NS.CalviScript
             } while (!IsEnd && IsWhiteSpace);
         }
 
+        /// <summary>
+        /// Moves forward until a new line or the end is found.
+        /// </summary>
         void HandleComment()
         {
             Debug.Assert(IsComment);
@@ -79,12 +85,23 @@ namespace NS.CalviScript
             } while (!IsEnd && Peek() != '\n' && Peek() != '\r');
         }
 
+        /// <summary>
+        /// Creates a new <see cref="Token"/> and moves forward.
+        /// </summary>
+        /// <param name="type">Value in <see cref="TokenType"/> enum for the matched char.</param>
+        /// <returns>A new <see cref="Token"/>.</returns>
         Token HandleSimpleToken(TokenType type)
         {
             Forward();
             return new Token(type, Peek(-1));
         }
 
+        /// <summary>
+        /// Creates a new <see cref="Token"/> and moves forward.
+        /// The number should be a zero only, or start with a digit from 1 to 9 followed by any number of digit from 0 to 9.
+        /// A number must not be immediately followed by an identifer.
+        /// </summary>
+        /// <returns>A new <see cref="Token"/>.</returns>
         Token HandleNumber()
         {
             Debug.Assert(IsNumber);
@@ -92,7 +109,7 @@ namespace NS.CalviScript
             if (Peek() == '0')
             {
                 Forward();
-                if (!IsEnd && (IsNumber || IsIdentifier)) return new Token(TokenType.Error, Peek());
+                if (!IsEnd && (IsNumber || IsIdentifier)) return new Token(TokenType.Error, "0" + Peek());
                 return new Token(TokenType.Number, '0');
             }
 
@@ -101,11 +118,20 @@ namespace NS.CalviScript
             {
                 sb.Append(Peek());
                 Forward();
-            } while (!IsEnd && char.IsDigit(Peek()));
+            } while (!IsEnd && IsNumber);
+
+            if (!IsEnd && IsIdentifier)
+                return new Token(TokenType.Error, sb.ToString() + Peek());
 
             return new Token(TokenType.Number, sb.ToString());
         }
 
+        /// <summary>
+        /// Creates a new <see cref="Token"/> and moves forward.
+        /// It will match any identifier as defined by <see cref="IsIdentifier"/>.
+        /// It will create special Token for "var": <see cref="TokenType.Var"/> and "while": <see cref="TokenType.While"/>.
+        /// </summary>
+        /// <returns>A new <see cref="Token"/>.</returns>
         Token HandleIdentifier()
         {
             Debug.Assert(IsIdentifier);
@@ -125,16 +151,37 @@ namespace NS.CalviScript
         #endregion
 
         #region Move methods
-        char Read() => _input[_position++];
+        /// <summary>
+        /// Gets the current char and move the position forward.
+        /// </summary>
+        /// <returns>The char at current position.</returns>
+        char Read()
+            => _input[_position++];
 
-        char Peek() => Peek(0);
+        /// <summary>
+        /// Gets the current char, but does **not** move the position forward.
+        /// </summary>
+        /// <returns>The char at current position.</returns>
+        char Peek()
+            => Peek(0);
 
-        char Peek(int offset) => _input[_position + offset];
+        /// <summary>
+        /// Gets the char at position + offset.
+        /// Does **not** move the position forward.
+        /// </summary>
+        /// <param name="offset">How many char to read forward. 0 for current.</param>
+        /// <returns>The char at offset + current position.</returns>
+        char Peek(int offset)
+            => _input[_position + offset];
 
-        void Forward() => _position++;
+        /// <summary>
+        /// Increment the position by 1.
+        /// </summary>
+        void Forward()
+            => _position++;
         #endregion
 
-        #region Parser Helpers
+        #region Token Matchers
         /// <summary>
         /// Match the <see cref="CurrentToken"/> type to <see cref="TokenType.Number"/>.
         /// </summary>
