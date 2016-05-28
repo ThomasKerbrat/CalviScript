@@ -137,31 +137,33 @@ namespace NS.CalviScript.Tests
             Assert.That(type.Type, Is.EqualTo(expected));
         }
 
-        [TestCase("+", TokenType.Plus)]
-        [TestCase("-", TokenType.Minus)]
-        [TestCase("*", TokenType.Mult)]
-        [TestCase("/", TokenType.Div)]
-        [TestCase("%", TokenType.Modulo)]
-        [TestCase("(", TokenType.LeftParenthesis)]
-        [TestCase(")", TokenType.RightParenthesis)]
-        [TestCase("?", TokenType.QuestionMark)]
-        [TestCase(":", TokenType.Colon)]
-        [TestCase("=", TokenType.Equal)]
-        [TestCase(";", TokenType.SemiColon)]
-        [TestCase("0", TokenType.Number)]
-        [TestCase("1", TokenType.Number)]
-        [TestCase("01", TokenType.Error)]
-        [TestCase("name", TokenType.Identifier)]
-        [TestCase("0name", TokenType.Error)]
-        public void should_match_types(string input, TokenType type)
+        [TestCase("+", TokenType.Plus, "+")]
+        [TestCase("-", TokenType.Minus, "-")]
+        [TestCase("*", TokenType.Mult, "*")]
+        [TestCase("/", TokenType.Div, "/")]
+        [TestCase("%", TokenType.Modulo, "%")]
+        [TestCase("(", TokenType.LeftParenthesis, "(")]
+        [TestCase(")", TokenType.RightParenthesis, ")")]
+        [TestCase("?", TokenType.QuestionMark, "?")]
+        [TestCase(":", TokenType.Colon, ":")]
+        [TestCase("=", TokenType.Equal, "=")]
+        [TestCase(";", TokenType.SemiColon, ";")]
+        [TestCase("0", TokenType.Number, "0")]
+        [TestCase("1", TokenType.Number, "1")]
+        [TestCase("01", TokenType.Error, "01")]
+        [TestCase("10", TokenType.Number, "10")]
+        [TestCase("name", TokenType.Identifier, "name")]
+        [TestCase("0name", TokenType.Error, "0n")]
+        [TestCase("1name", TokenType.Error, "1n")]
+        [TestCase("123name", TokenType.Error, "123n")]
+        public void should_match_types(string input, TokenType expectedType, string expectedValue)
         {
-            Token token;
             var tokenizer = new Tokenizer(input);
+
             tokenizer.GetNextToken();
 
-            var result = tokenizer.MatchToken(t => t == type, out token);
-
-            Assert.That(result, Is.EqualTo(true));
+            Assert.That(tokenizer.CurrentToken.Type, Is.EqualTo(expectedType));
+            Assert.That(tokenizer.CurrentToken.Value, Is.EqualTo(expectedValue));
         }
     }
 }
