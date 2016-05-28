@@ -137,6 +137,17 @@ namespace NS.CalviScript.Tests
             Assert.That(type.Type, Is.EqualTo(expected));
         }
 
+        [TestCase("+", TokenType.Plus, "+")]
+        [TestCase("-", TokenType.Minus, "-")]
+        [TestCase("*", TokenType.Mult, "*")]
+        [TestCase("/", TokenType.Div, "/")]
+        [TestCase("%", TokenType.Modulo, "%")]
+        [TestCase("(", TokenType.LeftParenthesis, "(")]
+        [TestCase(")", TokenType.RightParenthesis, ")")]
+        [TestCase("?", TokenType.QuestionMark, "?")]
+        [TestCase(":", TokenType.Colon, ":")]
+        [TestCase("=", TokenType.Equal, "=")]
+        [TestCase(";", TokenType.SemiColon, ";")]
         [TestCase("0", TokenType.Number, "0")]
         [TestCase("1", TokenType.Number, "1")]
         [TestCase("01", TokenType.Error, "01")]
