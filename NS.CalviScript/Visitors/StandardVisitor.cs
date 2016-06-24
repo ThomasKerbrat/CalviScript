@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace NS.CalviScript
@@ -128,6 +127,37 @@ namespace NS.CalviScript
 
             return newParameters != expression.Parameters || newBody != expression.Body
                 ? new FunctionDeclarationExpression(newParameters, newBody)
+                : expression;
+        }
+
+        public virtual IExpression Visit(FunctionCallExpression expression)
+        {
+            List<IExpression> possibleNewArguments = null;
+            int i = 0;
+
+            foreach (var parameter in expression.Arguments)
+            {
+                var visitedArgument = parameter.Accept(this);
+                if (visitedArgument != parameter)
+                {
+                    if (visitedArgument == null)
+                    {
+                        possibleNewArguments = new List<IExpression>();
+                        possibleNewArguments.AddRange(expression.Arguments.Take(i));
+                    }
+                }
+                if (possibleNewArguments != null)
+                    possibleNewArguments.Add((IExpression)visitedArgument);
+                ++i;
+            }
+
+            var newName = (LookUpExpression)expression.Name.Accept(this);
+            var newArguments = possibleNewArguments != null
+                ? possibleNewArguments
+                : expression.Arguments;
+
+            return newName != expression.Name || newArguments != expression.Arguments
+                ? new FunctionCallExpression(newName, newArguments)
                 : expression;
         }
     }

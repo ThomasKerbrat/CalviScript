@@ -79,5 +79,10 @@ namespace NS.CalviScript
 
             return string.Format("[function {0} {1}]", sb.ToString(), expression.Body.Accept(this));
         }
+
+        public string Visit(FunctionCallExpression expression)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

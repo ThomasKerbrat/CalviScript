@@ -71,5 +71,10 @@ namespace NS.CalviScript
         {
             throw new NotImplementedException();
         }
+
+        public string Visit(FunctionCallExpression expression)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

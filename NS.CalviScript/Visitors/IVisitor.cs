@@ -25,6 +25,8 @@
         T Visit(WhileExpression expression);
 
         T Visit(FunctionDeclarationExpression expression);
+
+        T Visit(FunctionCallExpression expression);
     }
 
     public static class IVisitorExtentions
