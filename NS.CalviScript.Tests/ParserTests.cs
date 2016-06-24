@@ -65,6 +65,7 @@ namespace NS.CalviScript.Tests
         [TestCase("do(a, b,)", @"[S [FC [LU ""do""] [[LU ""a""] [LU ""b""]]]]")]
         [TestCase("do(1 + 1)", @"[S [FC [LU ""do""] [[+ 1 1]]]]")]
         [TestCase("do(do2(1 + 1))", @"[S [FC [LU ""do""] [[FC [LU ""do2""] [[+ 1 1]]]]]]")]
+        [TestCase("do(function () { 1 + 1; })", @"[S [FC [LU ""do""] [[function [] [S [+ 1 1]]]]]]")]
         public void should_parse_function_call_expression(string input, string expected)
         {
             var visitor = new LispyStringVisitor();
