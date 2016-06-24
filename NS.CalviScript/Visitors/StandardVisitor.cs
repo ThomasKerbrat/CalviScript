@@ -91,9 +91,44 @@ namespace NS.CalviScript
                 : expression;
         }
 
-        public IExpression Visit(WhileExpression expression)
+        public virtual IExpression Visit(WhileExpression expression)
         {
-            throw new NotImplementedException();
+            IExpression condition = expression.Condition.Accept(this);
+            BlockExpression body = (BlockExpression)expression.Body.Accept(this);
+            return condition != expression.Condition || body != expression.Body
+                ? new WhileExpression(condition, body)
+                : expression;
+        }
+
+        public virtual IExpression Visit(FunctionDeclarationExpression expression)
+        {
+            List<VariableDeclarationExpression> possibleNewParameters = null;
+            int i = 0;
+
+            foreach ( var parameter in expression.Parameters)
+            {
+                var visitedParameter = parameter.Accept(this);
+                if (visitedParameter != parameter)
+                {
+                    if (visitedParameter == null)
+                    {
+                        possibleNewParameters = new List<VariableDeclarationExpression>();
+                        possibleNewParameters.AddRange(expression.Parameters.Take(i));
+                    }
+                }
+                if (possibleNewParameters != null)
+                    possibleNewParameters.Add((VariableDeclarationExpression)visitedParameter);
+                ++i;
+            }
+
+            var newParameters = possibleNewParameters != null
+                ? possibleNewParameters
+                : expression.Parameters;
+            var newBody = (BlockExpression)expression.Body.Accept(this);
+
+            return newParameters != expression.Parameters || newBody != expression.Body
+                ? new FunctionDeclarationExpression(newParameters, newBody)
+                : expression;
         }
     }
 }

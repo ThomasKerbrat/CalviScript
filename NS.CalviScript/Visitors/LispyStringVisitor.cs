@@ -63,5 +63,21 @@ namespace NS.CalviScript
             => string.Format("[while {0} {1}]",
                 expression.Condition.Accept(this),
                 expression.Body.Accept(this));
+
+        public string Visit(FunctionDeclarationExpression expression)
+        {
+            var sb = new StringBuilder("[");
+
+            var fisrt = true;
+            foreach (var param in expression.Parameters)
+            {
+                if (fisrt) fisrt = false;
+                else sb.Append(" ");
+                sb.Append(param.Accept(this));
+            }
+            sb.Append("]");
+
+            return string.Format("[function {0} {1}]", sb.ToString(), expression.Body.Accept(this));
+        }
     }
 }

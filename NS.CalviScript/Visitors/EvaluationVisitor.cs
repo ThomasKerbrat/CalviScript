@@ -140,5 +140,10 @@ namespace NS.CalviScript
 
             return result;
         }
+
+        public BaseValue Visit(FunctionDeclarationExpression expression)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

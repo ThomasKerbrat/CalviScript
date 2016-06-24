@@ -77,13 +77,13 @@ namespace NS.CalviScript
         #endregion
 
         #region Grammar Methods
-        IExpression Block(bool expected)
+        IExpression Block(bool expected, bool openScope = true)
         {
             if (!_tokenizer.MatchToken(TokenType.OpenCurly))
                 return expected ? CreateErrorExpression("{") : null;
 
             var statements = new List<IExpression>();
-            using (_syntaxicScope.OpenScope())
+            using (openScope ? _syntaxicScope.OpenScope() : null)
             {
                 while (!_tokenizer.MatchToken(TokenType.CloseCurly))
                 {
@@ -142,12 +142,15 @@ namespace NS.CalviScript
             IExpression expression = Expression();
             if (expression == null)
                 return CreateErrorExpression("expression");
-            
+
             return new AssignExpression(identifier, expression);
         }
 
         IExpression Expression()
         {
+            if (_tokenizer.MatchToken(TokenType.Function))
+                return FunctionDeclaration();
+
             var expression = MathExpression();
 
             if (_tokenizer.MatchToken(TokenType.QuestionMark))
@@ -237,6 +240,39 @@ namespace NS.CalviScript
             }
 
             return result;
+        }
+
+        IExpression FunctionDeclaration()
+        {
+            // Opening parenthesis
+            if (!_tokenizer.MatchToken(TokenType.LeftParenthesis))
+                return CreateErrorExpression("(");
+
+            // Params
+            var parameters = new List<VariableDeclarationExpression>();
+            Token identifier;
+            while (_tokenizer.MatchToken(TokenType.Identifier, out identifier))
+            {
+                IExpression declarationOrError = _syntaxicScope.Declare(identifier.Value);
+
+                if (declarationOrError is ErrorExpression)
+                    return declarationOrError;
+                parameters.Add((VariableDeclarationExpression)declarationOrError);
+
+                _tokenizer.MatchToken(TokenType.Coma);
+            }
+
+            // Closing parenthesis
+            if (!_tokenizer.MatchToken(TokenType.RightParenthesis))
+                return CreateErrorExpression(")");
+
+            // Body
+            var block = Block(expected: true, openScope: false);
+            if (block is ErrorExpression)
+                return block;
+            BlockExpression body = (BlockExpression)block;
+
+            return new FunctionDeclarationExpression(parameters, body);
         }
 
         IExpression While(bool expected)

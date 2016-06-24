@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace NS.CalviScript
 {
@@ -65,5 +66,10 @@ namespace NS.CalviScript
             => string.Format("while ({0}) {1}",
                 expression.Condition.Accept(this),
                 expression.Body.Accept(this));
+
+        public string Visit(FunctionDeclarationExpression expression)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

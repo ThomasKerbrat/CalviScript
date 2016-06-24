@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Parser\Expressions\AssignExpression.cs" />
     <Compile Include="Parser\Expressions\BinaryExpression.cs" />
+    <Compile Include="Parser\Expressions\FunctionDeclarationExpression.cs" />
     <Compile Include="Parser\Expressions\UndefinedExpression.cs" />
     <Compile Include="Parser\Expressions\ErrorExpression.cs" />
     <Compile Include="Parser\Expressions\WhileExpression.cs" />

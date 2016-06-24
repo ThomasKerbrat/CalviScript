@@ -46,6 +46,18 @@ namespace NS.CalviScript.Tests
             Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
         }
 
+        [TestCase("function () {}", "[S [function [] [S]]]")]
+        [TestCase("function (a) {}", @"[S [function [[VD ""a""]] [S]]]")]
+        [TestCase("function (a,) {}", @"[S [function [[VD ""a""]] [S]]]")]
+        [TestCase("function (a, b) {}", @"[S [function [[VD ""a""] [VD ""b""]] [S]]]")]
+        [TestCase("function (a) { a; }", @"[S [function [[VD ""a""]] [S [LU ""a""]]]]")]
+        public void should_parse_functions_expression(string input, string expected)
+        {
+            var visitor = new LispyStringVisitor();
+            var expression = Parser.ParseProgram(input);
+            Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
+        }
+
         [TestCase("1;", "[S 1]")]
         [TestCase("1 ? 5 % 3 : (1 + 1);", "[S [? 1 [% 5 3] [+ 1 1]]]")]
         [TestCase("var test = 3 + 50; var test2 = test * 3;", @"[S [= [VD ""test""] [+ 3 50]] [= [VD ""test2""] [* [LU ""test""] 3]]]")]

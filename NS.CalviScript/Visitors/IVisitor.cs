@@ -23,6 +23,8 @@
         T Visit(UndefinedExpression expression);
 
         T Visit(WhileExpression expression);
+
+        T Visit(FunctionDeclarationExpression expression);
     }
 
     public static class IVisitorExtentions
