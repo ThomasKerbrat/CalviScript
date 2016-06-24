@@ -66,23 +66,38 @@ namespace NS.CalviScript
 
         public string Visit(FunctionDeclarationExpression expression)
         {
-            var sb = new StringBuilder("[");
+            var parametersStringBuilder = new StringBuilder("[");
 
             var fisrt = true;
             foreach (var param in expression.Parameters)
             {
                 if (fisrt) fisrt = false;
-                else sb.Append(" ");
-                sb.Append(param.Accept(this));
+                else parametersStringBuilder.Append(" ");
+                parametersStringBuilder.Append(param.Accept(this));
             }
-            sb.Append("]");
+            parametersStringBuilder.Append("]");
 
-            return string.Format("[function {0} {1}]", sb.ToString(), expression.Body.Accept(this));
+            return string.Format("[function {0} {1}]",
+                parametersStringBuilder.ToString(),
+                expression.Body.Accept(this));
         }
 
         public string Visit(FunctionCallExpression expression)
         {
-            throw new NotImplementedException();
+            var argumentsStringBuilder = new StringBuilder("[");
+
+            var fisrt = true;
+            foreach (var param in expression.Arguments)
+            {
+                if (fisrt) fisrt = false;
+                else argumentsStringBuilder.Append(" ");
+                argumentsStringBuilder.Append(param.Accept(this));
+            }
+            argumentsStringBuilder.Append("]");
+
+            return string.Format("[FC {0} {1}]",
+                expression.Name.Accept(this),
+                argumentsStringBuilder.ToString());
         }
     }
 }

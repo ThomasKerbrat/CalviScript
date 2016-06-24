@@ -7,7 +7,7 @@ namespace NS.CalviScript.Tests
     {
         [TestCase("2 * 3 + 5", "[+ [* 2 3] 5]")]
         [TestCase("(11 + 7) / 15 % 8", "[% [/ [+ 11 7] 15] 8]")]
-        [TestCase("10 + (11 + 50)","[+ 10 [+ 11 50]]")]
+        [TestCase("10 + (11 + 50)", "[+ 10 [+ 11 50]]")]
         [TestCase("2 + 3 * 5", "[+ 2 [* 3 5]]")]
         [TestCase("2 * -7", "[* 2 [- 7]]")]
         [TestCase("5 + 7 ? -8 * 2 : 7 * 3 ? 0 : 15", "[? [+ 5 7] [* [- 8] 2] [? [* 7 3] 0 15]]")]
@@ -51,7 +51,21 @@ namespace NS.CalviScript.Tests
         [TestCase("function (a,) {}", @"[S [function [[VD ""a""]] [S]]]")]
         [TestCase("function (a, b) {}", @"[S [function [[VD ""a""] [VD ""b""]] [S]]]")]
         [TestCase("function (a) { a; }", @"[S [function [[VD ""a""]] [S [LU ""a""]]]]")]
-        public void should_parse_functions_expression(string input, string expected)
+        [TestCase("function (a) { function (b) { a + b; } }", @"[S [function [[VD ""a""]] [S [function [[VD ""b""]] [S [+ [LU ""a""] [LU ""b""]]]]]]]")]
+        public void should_parse_function_delcaration_expression(string input, string expected)
+        {
+            var visitor = new LispyStringVisitor();
+            var expression = Parser.ParseProgram(input);
+            Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
+        }
+
+        [TestCase("do()", @"[S [FC [LU ""do""] []]]")]
+        [TestCase("do(a)", @"[S [FC [LU ""do""] [[LU ""a""]]]]")]
+        [TestCase("do(a, b)", @"[S [FC [LU ""do""] [[LU ""a""] [LU ""b""]]]]")]
+        [TestCase("do(a, b,)", @"[S [FC [LU ""do""] [[LU ""a""] [LU ""b""]]]]")]
+        [TestCase("do(1 + 1)", @"[S [FC [LU ""do""] [[+ 1 1]]]]")]
+        [TestCase("do(do2(1 + 1))", @"[S [FC [LU ""do""] [[FC [LU ""do2""] [[+ 1 1]]]]]]")]
+        public void should_parse_function_call_expression(string input, string expected)
         {
             var visitor = new LispyStringVisitor();
             var expression = Parser.ParseProgram(input);

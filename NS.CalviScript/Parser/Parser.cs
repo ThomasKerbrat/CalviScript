@@ -232,7 +232,8 @@ namespace NS.CalviScript
             }
             else if (_tokenizer.MatchToken(TokenType.Identifier, out token))
             {
-                result = Assign(_syntaxicScope.LookUp(token.Value));
+                result = FunctionCall(identifier: token.Value, expected: false)
+                    ?? Assign(_syntaxicScope.LookUp(token.Value));
             }
             else
             {
@@ -273,6 +274,28 @@ namespace NS.CalviScript
             BlockExpression body = (BlockExpression)block;
 
             return new FunctionDeclarationExpression(parameters, body);
+        }
+
+        IExpression FunctionCall(string identifier, bool expected)
+        {
+            // Opening parenthesis
+            if (!_tokenizer.MatchToken(TokenType.LeftParenthesis))
+                return expected
+                    ? CreateErrorExpression("(")
+                    : null;
+
+            // Name
+            var name = _syntaxicScope.LookUp(identifier);
+
+            // Arguments & Closing parenthesis
+            var arguments = new List<IExpression>();
+            while (!_tokenizer.MatchToken(TokenType.RightParenthesis))
+            {
+                arguments.Add(Expression());
+                _tokenizer.MatchToken(TokenType.Coma);
+            }
+
+            return new FunctionCallExpression(name, arguments);
         }
 
         IExpression While(bool expected)
