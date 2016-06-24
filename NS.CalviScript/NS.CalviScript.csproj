@@ -47,7 +47,7 @@
     <Compile Include="Parser\Expressions\WhileExpression.cs" />
     <Compile Include="Parser\IExpression.cs" />
     <Compile Include="Parser\Expressions\ConstantExpression.cs" />
-    <Compile Include="Parser\IIdentifierExpression.cs" />
+    <Compile Include="Parser\Expressions\IIdentifierExpression.cs" />
     <Compile Include="Parser\Expressions\LookUpExpression.cs" />
     <Compile Include="Parser\Parser.cs" />
     <Compile Include="Parser\Expressions\BlockExpression.cs" />
