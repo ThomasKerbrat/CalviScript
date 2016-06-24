@@ -291,7 +291,10 @@ namespace NS.CalviScript
             var arguments = new List<IExpression>();
             while (!_tokenizer.MatchToken(TokenType.RightParenthesis))
             {
-                arguments.Add(Expression());
+                IExpression expression = Expression();
+                if (expression == null || expression is ErrorExpression)
+                    return expression;
+                arguments.Add(expression);
                 _tokenizer.MatchToken(TokenType.Coma);
             }
 
