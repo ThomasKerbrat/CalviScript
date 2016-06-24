@@ -65,6 +65,7 @@ namespace NS.CalviScript
             else if (Peek() == ';') result = HandleSimpleToken(TokenType.SemiColon);
             else if (Peek() == '{') result = HandleSimpleToken(TokenType.OpenCurly);
             else if (Peek() == '}') result = HandleSimpleToken(TokenType.CloseCurly);
+            else if (Peek() == ',') result = HandleSimpleToken(TokenType.Coma);
             else if (IsNumber) result = HandleNumber();
             else if (IsIdentifier) result = HandleIdentifier();
             else result = new Token(TokenType.Error, Peek());
@@ -192,6 +193,7 @@ namespace NS.CalviScript
             string identifier = sb.ToString();
             if (identifier == "var") return new Token(TokenType.Var, identifier);
             if (identifier == "while") return new Token(TokenType.While, identifier);
+            if (identifier == "function") return new Token(TokenType.Function, identifier);
             else return new Token(TokenType.Identifier, identifier);
         }
         #endregion

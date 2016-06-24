@@ -15,12 +15,13 @@
 
         LeftParenthesis,
         RightParenthesis,
+        OpenCurly,
+        CloseCurly,
+        Coma,
         QuestionMark,
         Colon,
         Equal,
         SemiColon,
-        OpenCurly,
-        CloseCurly,
 
         Identifier,
         Var,

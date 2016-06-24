@@ -19,6 +19,7 @@ namespace NS.CalviScript.Tests
         [TestCase(":", TokenType.Colon)]
         [TestCase("{", TokenType.OpenCurly)]
         [TestCase("}", TokenType.CloseCurly)]
+        [TestCase(",", TokenType.Coma)]
         public void should_parse_string_containing_one_char(string input, TokenType expected)
         {
             Tokenizer tokenizer = new Tokenizer(input);
