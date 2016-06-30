@@ -143,7 +143,7 @@ namespace NS.CalviScript
 
         public BaseValue Visit(FunctionDeclarationExpression expression)
         {
-            throw new NotImplementedException();
+            return UndefinedValue.Default;
         }
 
         public BaseValue Visit(FunctionCallExpression expression)

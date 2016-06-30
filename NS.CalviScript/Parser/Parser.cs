@@ -21,7 +21,7 @@ namespace NS.CalviScript
 
             while (!_tokenizer.MatchToken(TokenType.End))
             {
-                var statement = Block(false) ?? Statement();
+                var statement = StatementList(expectCurly: false, allowReturn: false);
                 if (statement is ErrorExpression)
                     return statement;
                 statements.Add(statement);
@@ -69,23 +69,36 @@ namespace NS.CalviScript
         #endregion
 
         #region Grammar Methods
-        IExpression Block(bool expected, bool openScope = true)
+        IExpression StatementList(bool expectCurly, bool allowReturn = false)
+        {
+            var statements = new List<IExpression>();
+            var matchedCurly = false;
+
+            while (!(matchedCurly = _tokenizer.MatchToken(TokenType.CloseCurly)) && !_tokenizer.MatchToken(TokenType.End))
+            {
+                var statement = ScopeBlock(expected: _tokenizer.CurrentToken.Type == TokenType.OpenCurly)
+                    ?? Return(allowReturn)
+                    ?? Statement();
+                if (statement is ErrorExpression)
+                    return statement;
+                statements.Add(statement);
+            }
+
+            if (!expectCurly && matchedCurly)
+                return CreateErrorExpression("not }");
+
+            return new BlockExpression(statements);
+        }
+
+        IExpression ScopeBlock(bool expected)
         {
             if (!_tokenizer.MatchToken(TokenType.OpenCurly))
                 return expected ? CreateErrorExpression("{") : null;
 
-            var statements = new List<IExpression>();
-            using (openScope ? _syntaxicScope.OpenScope() : null)
+            using (_syntaxicScope.OpenScope())
             {
-                while (!_tokenizer.MatchToken(TokenType.CloseCurly))
-                {
-                    var statement = Block(false) ?? Statement();
-                    if (statement is ErrorExpression) return statement;
-                    statements.Add(statement);
-                }
+                return StatementList(expectCurly: expected, allowReturn: false);
             }
-
-            return new BlockExpression(statements);
         }
 
         IExpression Statement()
@@ -98,10 +111,17 @@ namespace NS.CalviScript
                 return CreateErrorExpression("statement");
 
             _tokenizer.MatchToken(TokenType.SemiColon);
+
+            // Strict mode:
             //if (!_tokenizer.MatchToken(TokenType.SemiColon))
             //    return CreateErrorExpression(";");
 
             return expression;
+        }
+
+        IExpression Return(bool expected)
+        {
+            return null;
         }
 
         IExpression VariableDeclaration()
@@ -260,12 +280,17 @@ namespace NS.CalviScript
                 return CreateErrorExpression(")");
 
             // Body
-            var block = Block(expected: true, openScope: false);
-            if (block is ErrorExpression)
-                return block;
-            BlockExpression body = (BlockExpression)block;
+            if (!_tokenizer.MatchToken(TokenType.OpenCurly))
+                return CreateErrorExpression("{");
+            IExpression body = null;
+            using (_syntaxicScope.OpenScope())
+            {
+                body = StatementList(expectCurly: true, allowReturn: true);
+            }
+            if (body == null || body is ErrorExpression)
+                return body;
 
-            return new FunctionDeclarationExpression(parameters, body);
+            return new FunctionDeclarationExpression(parameters, (BlockExpression)body);
         }
 
         IExpression FunctionCall(string identifier, bool expected)
@@ -296,24 +321,23 @@ namespace NS.CalviScript
         IExpression While(bool expected)
         {
             if (!_tokenizer.MatchToken(TokenType.While))
-            {
-                return expected
-                    ? CreateErrorExpression("while")
-                    : null;
-            }
+                return expected ? CreateErrorExpression("while") : null;
 
+            // Match the condition expression with parenthesis.
             if (!_tokenizer.MatchToken(TokenType.LeftParenthesis))
-            {
                 return CreateErrorExpression("(");
-            }
-
             var condition = Expression();
             if (!_tokenizer.MatchToken(TokenType.RightParenthesis))
-            {
                 return CreateErrorExpression(")");
-            }
 
-            var body = Block(true);
+            // Match the body with optional curly braces.
+            if (!_tokenizer.MatchToken(TokenType.OpenCurly))
+                return CreateErrorExpression("{");
+            IExpression body;
+            using (_syntaxicScope.OpenScope())
+            {
+                body = StatementList(expectCurly: true, allowReturn: false);
+            }
             if (body == null || body is ErrorExpression)
                 return body;
 

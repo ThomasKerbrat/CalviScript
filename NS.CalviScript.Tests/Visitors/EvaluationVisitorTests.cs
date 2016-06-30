@@ -55,5 +55,20 @@ namespace NS.CalviScript.Tests.Visitors
 
             Assert.That(result, Is.InstanceOf<UndefinedValue>());
         }
+
+        [TestCase("var count = 21 var i = 5 while (i) { i = i - 1 var count = 42 } count", 21)]
+        [TestCase("var count = 21 function () { var count = 42 } count", 21)]
+        public void should_open_syntaxic_scope(string program, int expected)
+        {
+            IExpression expression = Parser.ParseProgram(program);
+            var globalContext = new Dictionary<string, BaseValue>();
+            EvaluationVisitor visitor = new EvaluationVisitor(globalContext);
+
+            BaseValue result = visitor.Visit(expression);
+
+            Assert.That(result, Is.InstanceOf<IntegerValue>());
+            Assert.That(((IntegerValue)result).Value, Is.EqualTo(expected));
+
+        }
     }
 }

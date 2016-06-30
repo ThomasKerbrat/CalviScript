@@ -1,6 +1,9 @@
-program              -> (block | statement )* EOI
-block                -> '{' (block | statement)* '}'
+program              -> statementList EOI
+statementList        -> (scopeBlock | statement)*
+statementList_return -> (scopeBlock | return | statement)*
+scopeBlock           -> '{' statementList '}'
 statement            -> (variableDeclaration | assign | while | expression) ';'?
+return               -> RETURN expression?
 
 assign               -> iidentifier '=' expression
 iidentifier          -> IDENTIFIER | variableDeclaration
@@ -13,6 +16,6 @@ factor               -> '-'? positiveFactor
 positiveFactor       -> NUMBER | functionCall | IDENTIFIER | ('(' expression ')')
 
 functionCall         -> IDENTIFIER '(' (expression (',' expression)*)? ')'
-functionDeclaration  -> 'function' '(' (IDENTIFIER (',' IDENTIFIER)*)? ')' block
+functionDeclaration  -> 'function' '(' (IDENTIFIER (',' IDENTIFIER)*)? ')' '{' statementList_return '}'
 
-while                -> 'while' '(' expression ')' block
+while                -> 'while' '(' expression ')' '{' statementList '}'
