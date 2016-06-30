@@ -1,8 +1,9 @@
 program              -> statementList EOI
 statementList        -> (scopeBlock | statement)*
-statementList_return -> (scopeBlock | return | statement)*
+statementList_return -> (scopeBlock | statement_return)*
 scopeBlock           -> '{' statementList '}'
 statement            -> (variableDeclaration | assign | while | expression) ';'?
+statement_return     -> (variableDeclaration | assign | while | expression | return) ';'?
 return               -> RETURN expression?
 
 assign               -> iidentifier '=' expression

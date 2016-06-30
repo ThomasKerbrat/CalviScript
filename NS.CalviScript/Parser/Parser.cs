@@ -77,15 +77,14 @@ namespace NS.CalviScript
             while (!(matchedCurly = _tokenizer.MatchToken(TokenType.CloseCurly)) && !_tokenizer.MatchToken(TokenType.End))
             {
                 var statement = ScopeBlock(expected: _tokenizer.CurrentToken.Type == TokenType.OpenCurly)
-                    ?? Return(allowReturn)
-                    ?? Statement();
+                    ?? Statement(allowReturn: allowReturn);
                 if (statement is ErrorExpression)
                     return statement;
                 statements.Add(statement);
             }
 
             if (!expectCurly && matchedCurly)
-                return CreateErrorExpression("not }");
+                return CreateUnexpectedTokenExpression("}");
 
             return new BlockExpression(statements);
         }
@@ -101,14 +100,22 @@ namespace NS.CalviScript
             }
         }
 
-        IExpression Statement()
+        IExpression Statement(bool allowReturn = false)
         {
             IExpression expression = VariableDeclaration()
                 ?? While(false)
+                ?? Return()
                 ?? Expression();
 
             if (expression == null)
                 return CreateErrorExpression("statement");
+
+            if (!allowReturn && expression is UnaryExpression)
+            {
+                UnaryExpression unaryExpression = (UnaryExpression)expression;
+                if (unaryExpression.OperatorType == TokenType.Return)
+                    return CreateUnexpectedTokenExpression("return");
+            }
 
             _tokenizer.MatchToken(TokenType.SemiColon);
 
@@ -119,9 +126,16 @@ namespace NS.CalviScript
             return expression;
         }
 
-        IExpression Return(bool expected)
+        IExpression Return()
         {
-            return null;
+            if (!_tokenizer.MatchToken(TokenType.Return))
+                return null;
+
+            var statement = Expression();
+            if (statement is ErrorExpression)
+                return statement;
+
+            return new UnaryExpression(TokenType.Return, statement);
         }
 
         IExpression VariableDeclaration()
@@ -355,6 +369,12 @@ namespace NS.CalviScript
         {
             return new ErrorExpression(string.Format(
                 "Unexpected token <{0}>.", _tokenizer.CurrentToken.Value));
+        }
+
+        ErrorExpression CreateUnexpectedTokenExpression(string expected)
+        {
+            return new ErrorExpression(string.Format(
+                "Unexpected token <{0}>.", expected));
         }
     }
 }

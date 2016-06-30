@@ -52,6 +52,7 @@ namespace NS.CalviScript.Tests
         [TestCase("function (a, b) {}", @"[S [function [[VD ""a""] [VD ""b""]] [S]]]")]
         [TestCase("function (a) { a; }", @"[S [function [[VD ""a""]] [S [LU ""a""]]]]")]
         [TestCase("function (a) { function (b) { a + b; } }", @"[S [function [[VD ""a""]] [S [function [[VD ""b""]] [S [+ [LU ""a""] [LU ""b""]]]]]]]")]
+        [TestCase("function (a) { return a; }", @"[S [function [[VD ""a""]] [S [return [LU ""a""]]]]]")]
         public void should_parse_function_delcaration_expression(string input, string expected)
         {
             var visitor = new LispyStringVisitor();

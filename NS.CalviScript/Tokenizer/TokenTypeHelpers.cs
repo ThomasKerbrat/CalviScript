@@ -10,6 +10,7 @@ namespace NS.CalviScript
             else if (type == TokenType.Minus) return "-";
             else if (type == TokenType.Mult) return "*";
             else if (type == TokenType.Div) return "/";
+            else if (type == TokenType.Return) return "return";
             else
             {
                 Debug.Assert(type == TokenType.Modulo);
