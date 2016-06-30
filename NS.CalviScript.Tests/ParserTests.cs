@@ -78,12 +78,8 @@ namespace NS.CalviScript.Tests
         [TestCase("var test = 3 + 50; var test2 = test * 3;", @"[S [= [VD ""test""] [+ 3 50]] [= [VD ""test2""] [* [LU ""test""] 3]]]")]
         public void should_parse_program(string input, string expected)
         {
-            var tokenizer = new Tokenizer(input);
-            var parser = new Parser(tokenizer);
             var visitor = new LispyStringVisitor();
-
-            IExpression expression = parser.ParseProgram();
-
+            IExpression expression = Parser.ParseProgram(input);
             Assert.That(visitor.Visit(expression), Is.EqualTo(expected));
         }
 

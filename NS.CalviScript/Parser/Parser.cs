@@ -15,11 +15,7 @@ namespace NS.CalviScript
         }
 
         #region Entry Points
-        /// <summary>
-        /// Parse a program as defined in the "program" rule in formal grammar.
-        /// </summary>
-        /// <returns>The program AST.</returns>
-        public IExpression ParseProgram()
+        IExpression ParseProgram()
         {
             List<IExpression> statements = new List<IExpression>();
 
@@ -49,11 +45,7 @@ namespace NS.CalviScript
             return parser.ParseProgram();
         }
 
-        /// <summary>
-        /// Parse a program as defined in the "expression" rule in formal grammar.
-        /// </summary>
-        /// <returns>The expression AST.</returns>
-        public IExpression ParseExpression()
+        IExpression ParseExpression()
         {
             IExpression result = Expression();
             Token token;
