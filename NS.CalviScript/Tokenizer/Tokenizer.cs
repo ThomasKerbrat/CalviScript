@@ -194,6 +194,7 @@ namespace NS.CalviScript
             if (identifier == "var") return new Token(TokenType.Var, identifier);
             if (identifier == "while") return new Token(TokenType.While, identifier);
             if (identifier == "function") return new Token(TokenType.Function, identifier);
+            if (identifier == "return") return new Token(TokenType.Return, identifier);
             else return new Token(TokenType.Identifier, identifier);
         }
         #endregion

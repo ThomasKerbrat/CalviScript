@@ -191,6 +191,7 @@ namespace NS.CalviScript.Tests
         [TestCase("var", TokenType.Var, "var")]
         [TestCase("while", TokenType.While, "while")]
         [TestCase("function", TokenType.Function, "function")]
+        [TestCase("return", TokenType.Return, "return")]
         public void should_parse_special_identifiers(string input, TokenType expectedType, string expectedValue)
         {
             var tokenizer = new Tokenizer(input);

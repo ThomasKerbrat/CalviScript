@@ -27,6 +27,7 @@
         Var,
         While,
         Function,
+        Return,
 
         End
     }
