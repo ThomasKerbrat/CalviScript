@@ -63,8 +63,10 @@
     <Compile Include="Tokenizer\TokenType.cs" />
     <Compile Include="Tokenizer\TokenTypeHelpers.cs" />
     <Compile Include="ValueObjects\ErrorValue.cs" />
+    <Compile Include="ValueObjects\FunctionValue.cs" />
     <Compile Include="ValueObjects\UndefinedValue.cs" />
     <Compile Include="ValueObjects\_BaseValue.cs" />
+    <Compile Include="Visitors\DynamicScope.cs" />
     <Compile Include="Visitors\EvaluationVisitor.cs" />
     <Compile Include="Visitors\InfixStringVisitor.cs" />
     <Compile Include="Visitors\IVisitor.cs" />
