@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace NS.CalviScript
 {
@@ -40,7 +41,6 @@ namespace NS.CalviScript
                 }
                 return new ErrorValue("Reference not found: " + expression.Identifier);
             }
-
         }
 
         public BaseValue Visit(UnaryExpression expression)
@@ -146,12 +146,32 @@ namespace NS.CalviScript
 
         public BaseValue Visit(FunctionDeclarationExpression expression)
         {
-            return UndefinedValue.Default;
+            return new FunctionValue(expression);
         }
 
         public BaseValue Visit(FunctionCallExpression expression)
         {
-            throw new NotImplementedException();
+            List<BaseValue> arguments = expression.Arguments.Select(a => a.Accept(this)).ToList();
+
+            BaseValue possibleBody = expression.Name.Accept(this);
+            FunctionValue body = possibleBody as FunctionValue;
+            if (body == null)
+                return new ErrorValue($"{expression.Name.Identifier} is not a function.");
+
+            // Adding undefined values for not passed arguments.
+            while (body.FunctionDeclaration.Parameters.Count > arguments.Count)
+            {
+                arguments.Add(UndefinedValue.Default);
+            }
+
+            using (_dynamicScope.OpenScope())
+            {
+                for (int index = 0; index < body.FunctionDeclaration.Parameters.Count; index++)
+                {
+                    _dynamicScope.Register(body.FunctionDeclaration.Parameters[index], arguments[index]);
+                }
+                return body.FunctionDeclaration.Body.Accept(this);
+            }
         }
     }
 }
