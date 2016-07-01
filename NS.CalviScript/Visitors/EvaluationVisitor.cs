@@ -102,6 +102,7 @@ namespace NS.CalviScript
         public BaseValue Visit(AssignExpression expression)
         {
             var result = expression.Expression.Accept(this);
+            expression.Identifier.Accept(this);
             if (expression.Identifier.VariableDeclaration != null)
             {
                 return _dynamicScope.SetValue(expression.Identifier.VariableDeclaration, result);
