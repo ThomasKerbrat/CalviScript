@@ -12,6 +12,7 @@ namespace NS.CalviScript
 
         public IReadOnlyList<IExpression> Statements { get; }
 
+        [System.Diagnostics.DebuggerStepThrough]
         public T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);

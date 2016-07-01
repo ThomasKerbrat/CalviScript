@@ -14,6 +14,7 @@ namespace NS.CalviScript
         VariableDeclarationExpression IIdentifierExpression.VariableDeclaration
             => this;
 
+        [System.Diagnostics.DebuggerStepThrough]
         public T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);

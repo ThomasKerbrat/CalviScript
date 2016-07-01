@@ -15,6 +15,7 @@ namespace NS.CalviScript
         public IExpression FalseExpression;
         public IExpression TrueExpression;
 
+        [System.Diagnostics.DebuggerStepThrough]
         public T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);
