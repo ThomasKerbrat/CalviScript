@@ -58,6 +58,10 @@ namespace NS.CalviScript.Tests.Visitors
 
         [TestCase("var count = 21 var i = 5 while (i) { i = i - 1 var count = 42 } count", 21)]
         [TestCase("var count = 21 function () { var count = 42 } count", 21)]
+        [TestCase("var f = function (a) { a + 10 }; f(3);", 13)]
+        [TestCase("var x = function (b) { var a = 3; while (b - 1) { a = a + 1; var a = a + b; b = b - 1; } }; x(2);", 5)]
+        [TestCase("var add10 = function (a) { a + 10; }; var add15 = function (a) { add10(a + 5); }; add10(add15(100));", 125)]
+        [TestCase("var recurse; recurse = function (a) { a ? a + recurse(a - 1) : 0; }; recurse(3)", 6)]
         public void should_open_syntaxic_scope(string program, int expected)
         {
             IExpression expression = Parser.ParseProgram(program);

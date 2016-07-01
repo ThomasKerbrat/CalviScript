@@ -7,12 +7,12 @@ namespace NS.CalviScript
     public class EvaluationVisitor : IVisitor<BaseValue>
     {
         private Dictionary<string, BaseValue> _globalContext;
-        private Dictionary<VariableDeclarationExpression, BaseValue> _variables;
+        private DynamicScope _dynamicScope;
 
         public EvaluationVisitor(Dictionary<string, BaseValue> globalContext)
         {
             _globalContext = globalContext;
-            _variables = new Dictionary<VariableDeclarationExpression, BaseValue>();
+            _dynamicScope = new DynamicScope();
         }
 
         public BaseValue Visit(BlockExpression expression)
@@ -29,7 +29,7 @@ namespace NS.CalviScript
         {
             if (expression.VariableDeclaration != null)
             {
-                return _variables[expression.VariableDeclaration];
+                return _dynamicScope.FindRegistered(expression.VariableDeclaration);
             }
             else
             {
@@ -95,7 +95,7 @@ namespace NS.CalviScript
 
         public BaseValue Visit(VariableDeclarationExpression expression)
         {
-            _variables.Add(expression, UndefinedValue.Default);
+            _dynamicScope.Register(expression, UndefinedValue.Default);
             return UndefinedValue.Default;
         }
 
@@ -104,7 +104,7 @@ namespace NS.CalviScript
             var result = expression.Expression.Accept(this);
             if (expression.Identifier.VariableDeclaration != null)
             {
-                return _variables[expression.Identifier.VariableDeclaration] = result;
+                return _dynamicScope.SetValue(expression.Identifier.VariableDeclaration, result);
             }
             else
             {
@@ -135,7 +135,10 @@ namespace NS.CalviScript
 
             while (expression.Condition.Accept(this).IsTrue)
             {
-                result = expression.Body.Accept(this);
+                using (_dynamicScope.OpenScope())
+                {
+                    result = expression.Body.Accept(this);
+                }
             }
 
             return result;
